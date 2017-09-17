@@ -914,12 +914,15 @@ def Percolation():
                 print "Max_BPF_Average all direction = ",Z[1]
                 print "Max_BPF_Average up and down = ", Z1[1]
                 print "Max_BPF_Average left and right = ", Z2[1]
+                print "Max_BPF_Average all direction and 20: ",Z3[1]
                 print "Average Percent of Initial Budget Remaining all direction = ",Z[4]*100
                 print "Average Percent of Initial Budget Remaining up and down = ",Z1[4]*100
                 print "Average Percent of Initial Budget Remaining left and right = ",Z2[4]*100
+                print "Average Percent of Initial Budget Remaining all direction and 20 = ",Z3[4]*100
                 print "All Direction: Number of Times Gone Bankrupt = ",Z[5], " This means there was a ",Z[6],"% Bankruptcy rate!"
                 print "Up and down: Number of Times Gone Bankrupt = ",Z1[5], " This means there was a ",Z1[6],"% Bankruptcy rate!"
                 print "Left and right: Number of Times Gone Bankrupt = ",Z2[5], " This means there was a ",Z2[6],"% Bankruptcy rate!"
+                print "All direction 20: Number of Times Gone Bankrupt =",Z3[5]," This means there was a ",Z3[6],"% Bankruptcy rate!"
                 d=True
         elif choice.lower()=='y' or choice.lower=='yes':
             s=False

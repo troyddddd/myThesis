@@ -1,0 +1,13 @@
+Max_BPF_Average all direction =  30.0
+Max_BPF_Average up and down =  24.0
+Max_BPF_Average left and right =  9.0
+Max_BPF_Average all direction and 20:  35.0
+Average Percent of Initial Budget Remaining all direction =  3.38331372893
+Average Percent of Initial Budget Remaining up and down =  1.45835645408
+Average Percent of Initial Budget Remaining left and right =  3.02842605175
+Average Percent of Initial Budget Remaining all direction and 20 =  11.1691722891
+All Direction: Number of Times Gone Bankrupt =  0  This means there was a  0.0 % Bankruptcy rate!
+Up and down: Number of Times Gone Bankrupt =  0  This means there was a  0.0 % Bankruptcy rate!
+Left and right: Number of Times Gone Bankrupt =  0  This means there was a  0.0 % Bankruptcy rate!
+All direction 20: Number of Times Gone Bankrupt = 0  This means there was a  0.0 % Bankruptcy rate!
+
