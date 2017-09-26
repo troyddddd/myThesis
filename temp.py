@@ -21,7 +21,8 @@ import random as rand   #First used in Thesis 2.0
 import matplotlib.patches as mpatches
 import matplotlib.lines as mlines
 from datetime import datetime
-
+import outputfile as op #self built function module
+import os
 
 """Changes from Thesis 2.0:
 
@@ -228,7 +229,7 @@ def RD(x_val,y_val,num_sites,E,S,R,L):
                  
     return one_index_x,one_index_y  
     
-def twocheck(S,L,twos_i,twos_j,p_tup,p_win,win_col,j): #this function checks to see if states should be changed from 2-3
+def twocheck(S,L,twos_i,twos_j,p_tup,p_win,win_col,j,strategy): #this function checks to see if states should be changed from 2-3
     m=S.shape[0]
     n=S.shape[1]
     """ This function takes an i,j input of a lattice site that is known to be
@@ -239,27 +240,27 @@ def twocheck(S,L,twos_i,twos_j,p_tup,p_win,win_col,j): #this function checks to 
     while count>0:
         i=twos_i[0] #value for the row
         j=twos_j[0] #value for the column (firm)
-        for x in range(max(0,i-1),min(m,i+2)): #searches up and down
-                    if L[x,j]==1:
-                        S[x,j]=2
-                        L[x,j]=S[x,j]
-                        twos_i.append(x)
-                        twos_j.append(j)
-                        if (x,j) in p_tup and ((x,j) not in p_win):
-                                    p_win.append((x,j))
-                                    win_col.append(j)
+        if strategy == 'all' or strategy == 'ud':
+            for x in range(max(0,i-1),min(m,i+2)): #searches up and down
+                if L[x,j]==1:
+                    S[x,j]=2
+                    L[x,j]=S[x,j]
+                    twos_i.append(x)
+                    twos_j.append(j)
+                    if (x,j) in p_tup and ((x,j) not in p_win):
+                        p_win.append((x,j))
+                        win_col.append(j)
                                     
-                        
-                      
-        for y in range(max(0,j-1),min(j+2,n)): #searches left and right
-                     if L[i,y]==1:
-                        S[i,y]=2
-                        L[i,y]=S[i,y]
-                        twos_i.append(i)
-                        twos_j.append(y)  
-                        if (i,y) in p_tup and ((i,y) not in p_win):
-                                    p_win.append((i,y))
-                                    win_col.append(j)
+        if strategy == 'all' or strategy == 'lr':             
+            for y in range(max(0,j-1),min(j+2,n)): #searches left and right
+                if L[i,y]==1:
+                    S[i,y]=2
+                    L[i,y]=S[i,y]
+                    twos_i.append(i)
+                    twos_j.append(y)  
+                    if (i,y) in p_tup and ((i,y) not in p_win):
+                        p_win.append((i,y))
+                        win_col.append(j)
                                     
         del twos_i[0]
         del twos_j[0]
@@ -283,6 +284,8 @@ def Search(S,R,L,r,E,fold,p_tup,individual_bankrupt,strategy,con_distance): #sea
     for j in order:
         BPF_y=j
         BPF_x=fold[j]
+        op.writeBPF(BPF_y,False)
+        op.writeBPF(BPF_x,True)
         if BPF_x>=0 and individual_bankrupt[j]==0: #ensures that there is a BPF point around with R&D can be conducted and the column has a budget
             x_val,y_val,num_sites=Search_Index(m,n,BPF_x,BPF_y,r,L)
             if con_distance > 0 and j+con_distance < n:
@@ -297,35 +300,35 @@ def Search(S,R,L,r,E,fold,p_tup,individual_bankrupt,strategy,con_distance): #sea
                 x_val=one_index[0]
                 y_val=one_index[1]
                 for v in range(len(one_index[0])):
-                        c=x_val[v]
-                        d=y_val[v]
-                        count=0
-                        if strategy == 'ud' or strategy == 'all':
-                            for x in range(max(0,c-1),min(m,c+2)): #searches up and down
-                                if S[x,d]==2:
-                                    S[c,d]=2
-                                    L[c,d]=S[c,d]
-                                    if (c,d) in p_tup and ((c,d) not in p_win):
-                                        p_win.append((c,d))
-                                        win_col.append(j)
-                                    count=1
-                        if strategy == 'lr' or strategy == 'all':
-                            for y in range(max(0,d-1),min(d+2,n)): #searches left and right
-                                if S[c,y]==2:
-                                    S[c,d]=2
-                                    L[c,d]=S[c,d]
-                                    if (c,d) in p_tup and ((c,d) not in p_win):
-                                        p_win.append((c,d))
-                                        win_col.append(j)
-                                    count=1
-                        if count==1:
-                            twos_i=[c]
-                            twos_j=[d]
-                            Y=twocheck(S,L,twos_i,twos_j,p_tup,p_win,win_col,j)  #searches like a chain for further changes to state 2
-                            S=Y[0]
-                            p_tup=Y[1]
-                            p_win=Y[2]
-                            win_col=Y[3]
+                    c=x_val[v]
+                    d=y_val[v]
+                    count=0
+                    if strategy == 'ud' or strategy == 'all':
+                        for x in range(max(0,c-1),min(m,c+2)): #searches up and down
+                            if S[x,d]==2:
+                                S[c,d]=2
+                                L[c,d]=S[c,d]
+                                if (c,d) in p_tup and ((c,d) not in p_win):
+                                    p_win.append((c,d))
+                                    win_col.append(j)
+                                count=1
+                    if strategy == 'lr' or strategy == 'all':
+                        for y in range(max(0,d-1),min(d+2,n)): #searches left and right
+                            if S[c,y]==2:
+                                S[c,d]=2
+                                L[c,d]=S[c,d]
+                                if (c,d) in p_tup and ((c,d) not in p_win):
+                                    p_win.append((c,d))
+                                    win_col.append(j)
+                                count=1
+                    if count==1:
+                        twos_i=[c]
+                        twos_j=[d]
+                        Y=twocheck(S,L,twos_i,twos_j,p_tup,p_win,win_col,j,strategy)  #searches like a chain for further changes to state 2
+                        S=Y[0]
+                        p_tup=Y[1]
+                        p_win=Y[2]
+                        win_col=Y[3]
 
     return p_win,win_col #array of tuples corresponding to the 'prizes' discovered during this round of Search and win_col is an array of the columns that were doing search when the prizes were found
     
@@ -518,6 +521,14 @@ def Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,
     """
     
     S,Fold,p_tup,R,L=Initialize(q,n,r,p,Ru,Ro,choice)
+    with open ('test.txt','w') as f:
+        f.write('S matrix: '+'\n')
+        op.writeOriginalmatrix(S,'a')
+        f.write('S matrix: '+'\n')
+        op.writeOriginalmatrix(R,'a')
+        f.write('L matrix: '+'\n')
+        op.writeOriginalmatrix(L,'a')
+
     p_win_old=[]
   
     individual_b=[initial_b]*n #difference from thesis 3.0 ...  each column now has a budget separate from the other columns
