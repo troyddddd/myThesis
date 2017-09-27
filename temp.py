@@ -23,6 +23,7 @@ import matplotlib.lines as mlines
 from datetime import datetime
 import outputfile as op #self built function module
 import os
+import random_generator as rg
 
 """Changes from Thesis 2.0:
 
@@ -267,7 +268,7 @@ def twocheck(S,L,twos_i,twos_j,p_tup,p_win,win_col,j,strategy): #this function c
         count=len(twos_i) #keeps track of how many sites that are now 2 still need checking
     return S,p_tup,p_win,win_col
     
-def Search(S,R,L,r,E,fold,p_tup,individual_bankrupt,strategy,con_distance): #searches squares within a given radius r to do R&D on.  This R&D effort is given by E and if successful states are changed from 1 to 2
+def Search(S,R,L,r,E,fold,p_tup,individual_bankrupt,strategy,con_distance,length): #searches squares within a given radius r to do R&D on.  This R&D effort is given by E and if successful states are changed from 1 to 2
     """
     This is the key function where R&D search is performed.  It takes the coordinates from the 'Search_Index' function and if num_sites
     is greater than zero it continues on to perform the RD function.  After the RD function any states changed from -1 to 1 go onto further
@@ -288,7 +289,10 @@ def Search(S,R,L,r,E,fold,p_tup,individual_bankrupt,strategy,con_distance): #sea
             op.writeBPF(BPF_y,False)
             op.writeBPF(BPF_x,True)
             x_val,y_val,num_sites=Search_Index(m,n,BPF_x,BPF_y,r,L)
-            if con_distance > 0 and j+con_distance < n:
+
+            if con_distance > 0 and j+con_distance < n and fold[j+con_distance] >= 0:
+                op.writeBPF(j+con_distance,False)
+                op.writeBPF(fold[j+con_distance],True)
                 x_temp_val,y_temp_val,temp_num_sites = Search_Index(m,n,fold[j+con_distance],j,r,L)
                 for elex in x_temp_val:
                     x_val.append(elex)
