@@ -284,9 +284,9 @@ def Search(S,R,L,r,E,fold,p_tup,individual_bankrupt,strategy,con_distance): #sea
     for j in order:
         BPF_y=j
         BPF_x=fold[j]
-        op.writeBPF(BPF_y,False)
-        op.writeBPF(BPF_x,True)
         if BPF_x>=0 and individual_bankrupt[j]==0: #ensures that there is a BPF point around with R&D can be conducted and the column has a budget
+            op.writeBPF(BPF_y,False)
+            op.writeBPF(BPF_x,True)
             x_val,y_val,num_sites=Search_Index(m,n,BPF_x,BPF_y,r,L)
             if con_distance > 0 and j+con_distance < n:
                 x_temp_val,y_temp_val,temp_num_sites = Search_Index(m,n,fold[j+con_distance],j,r,L)
@@ -521,13 +521,18 @@ def Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,
     """
     
     S,Fold,p_tup,R,L=Initialize(q,n,r,p,Ru,Ro,choice)
-    with open ('test.txt','w') as f:
-        f.write('S matrix: '+'\n')
-        op.writeOriginalmatrix(S,'a')
-        f.write('S matrix: '+'\n')
-        op.writeOriginalmatrix(R,'a')
-        f.write('L matrix: '+'\n')
-        op.writeOriginalmatrix(L,'a')
+    f=open('test.txt','w')
+    f.write('S matrix: '+'\n')
+    f.close()
+    op.writeOriginalmatrix(S,'a')
+    f=open('test.txt','a')
+    f.write('R matrix: '+'\n')
+    f.close()
+    op.writeOriginalmatrix(R,'a')
+    f=open('test.txt','a')
+    f.write('L matrix: '+'\n')
+    f.close()
+    op.writeOriginalmatrix(L,'a')
 
     p_win_old=[]
   
