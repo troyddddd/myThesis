@@ -268,7 +268,7 @@ def twocheck(S,L,twos_i,twos_j,p_tup,p_win,win_col,j,strategy): #this function c
         count=len(twos_i) #keeps track of how many sites that are now 2 still need checking
     return S,p_tup,p_win,win_col
     
-def Search(S,R,L,r,E,fold,p_tup,individual_bankrupt,strategy,con_distance,length): #searches squares within a given radius r to do R&D on.  This R&D effort is given by E and if successful states are changed from 1 to 2
+def Search(S,R,L,r,E,fold,p_tup,individual_bankrupt,strategy,concur,filename): #searches squares within a given radius r to do R&D on.  This R&D effort is given by E and if successful states are changed from 1 to 2
     """
     This is the key function where R&D search is performed.  It takes the coordinates from the 'Search_Index' function and if num_sites
     is greater than zero it continues on to perform the RD function.  After the RD function any states changed from -1 to 1 go onto further
@@ -286,19 +286,21 @@ def Search(S,R,L,r,E,fold,p_tup,individual_bankrupt,strategy,con_distance,length
         BPF_y=j
         BPF_x=fold[j]
         if BPF_x>=0 and individual_bankrupt[j]==0: #ensures that there is a BPF point around with R&D can be conducted and the column has a budget
-            op.writeBPF(BPF_y,False)
-            op.writeBPF(BPF_x,True)
+            op.writeBPF(BPF_y,False,filename)
+            op.writeBPF(BPF_x,True,filename)
             x_val,y_val,num_sites=Search_Index(m,n,BPF_x,BPF_y,r,L)
-
-            if con_distance > 0 and j+con_distance < n and fold[j+con_distance] >= 0:
-                op.writeBPF(j+con_distance,False)
-                op.writeBPF(fold[j+con_distance],True)
-                x_temp_val,y_temp_val,temp_num_sites = Search_Index(m,n,fold[j+con_distance],j,r,L)
-                for elex in x_temp_val:
-                    x_val.append(elex)
-                for eley in y_temp_val:
-                    y_val.append(eley)
-                num_sites = num_sites + temp_num_sites
+            if concur == True:
+                temp_sequence = sorted(rg.generate_sequence(j,n,5))
+                for ele in temp_sequence:
+                    if fold[ele] >= 0:
+                        op.writeBPF(ele,False,filename)
+                        op.writeBPF(fold[ele],True,filename)
+                        x_temp_val,y_temp_val,temp_num_sites = Search_Index(m,n,fold[ele],ele,r,L)
+                        for elex in x_temp_val:
+                            x_val.append(elex)
+                        for eley in y_temp_val:
+                            y_val.append(eley)
+                        num_sites = num_sites + temp_num_sites
             if num_sites>0:
                 one_index=RD(x_val,y_val,num_sites,E[j],S,R,L)
                 x_val=one_index[0]
@@ -518,31 +520,35 @@ def line_plot(X,Y,names,val,metric_num,val_metric,y_label):
     
     plt.show()
     
-def Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,con_distance):
+def Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,concur):
     """
     This is the key function that allows the simulation to run. It runs at most t_max iterations of the Search function.  It updates all
     the matrices, BPF, budgets, etc. If ever the budget goes below zero the iteration stops and a 'Bankruptcy' is called.
     """
     
     S,Fold,p_tup,R,L=Initialize(q,n,r,p,Ru,Ro,choice)
-    f=open('test.txt','w')
+    filename = 'result_' + strategy + "_Concurrence: "+str(concur)
+    f=open(filename,'w')
     f.write('S matrix: '+'\n')
     f.close()
-    op.writeOriginalmatrix(S,'a')
+    op.writeOriginalmatrix(S,'a',filename)
     f=open('test.txt','a')
     f.write('R matrix: '+'\n')
     f.close()
-    op.writeOriginalmatrix(R,'a')
+    op.writeOriginalmatrix(R,'a',filename)
     f=open('test.txt','a')
     f.write('L matrix: '+'\n')
     f.close()
-    op.writeOriginalmatrix(L,'a')
+    op.writeOriginalmatrix(L,'a',filename)
 
     p_win_old=[]
   
     individual_b=[initial_b]*n #difference from thesis 3.0 ...  each column now has a budget separate from the other columns
     total_b=float(initial_b)*n  #key change from thesis 3.0
-    
+    filename1 = 'IndividualBudget_' + strategy + "_Concurrence: "+str(concur)
+    f2 = open(filename1,'w')
+    f2.write(str(individual_b)+'\n')
+    f2.close()
     total_initial_b=total_b
    
     
@@ -568,7 +574,7 @@ def Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,
     
     while t<t_max and t!=-1:
         
-        p_win,win_col=Search(S,R,L,r,E,Fold,p_tup,individual_bankrupt,strategy,con_distance)
+        p_win,win_col=Search(S,R,L,r,E,Fold,p_tup,individual_bankrupt,strategy,concur,filename)
        
         Frontier=BPF(S,Fold)
         
@@ -576,9 +582,11 @@ def Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,
             individual_b[j]=individual_b[j]-E[j]
 
         individual_b,p_win_old,p_tup=win(individual_b,p_win_old,p_win,pu,po,p_tup,win_col,choice)
-        
+        filename1 = 'IndividualBudget_' + strategy + "_Concurrence: "+str(concur)
+        f2 = open(filename1,'a')
+        f2.write(str(individual_b)+'\n')
+        f2.close()
         total_b=sum(individual_b)
-        
         
         for c in range(n):
             if individual_b[c]<0.0001:
@@ -624,7 +632,7 @@ def Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,
     return L,T,B,B_percent,Bankrupt,t_Bankrupt,Frontier,p_win_old,max_BPF
     
     
-def runs(runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,con_distance):
+def runs(runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,concur):
     """This function simply performs multiple runs of the Iteration function.  It also performs some statistics, basically
     averaging the key metrics over the number of runs"""
     max_BPF=[]
@@ -643,7 +651,7 @@ def runs(runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strateg
    
     x=0
     while x<runs:
-        L,T,B,B_percent,Bankrupt,t_Bankrupt,Frontier,p_win_old,max_BPF_array=Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,con_distance)
+        L,T,B,B_percent,Bankrupt,t_Bankrupt,Frontier,p_win_old,max_BPF_array=Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,concur)
         
         max_BPF_val=max(Frontier)
         average_BPF_val=np.average(Frontier)
@@ -912,10 +920,10 @@ def Percolation():
                 val = [num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max]
                 val1 = [num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max]
                 val2 = [num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max]
-                Z = runs(num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,prob_choice,'all',0)
-                Z1 = runs(num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,prob_choice,'ud',0)
-                Z2 = runs(num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,prob_choice,'lr',0)
-                Z3 = runs(num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,prob_choice,'all',20)
+                Z = runs(num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,prob_choice,'all',False)
+                Z1 = runs(num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,prob_choice,'ud',False)
+                Z2 = runs(num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,prob_choice,'lr',False)
+                Z3 = runs(num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,prob_choice,'all',True)
                 if num_runs==1:
                     o=False
                     while o==False:
