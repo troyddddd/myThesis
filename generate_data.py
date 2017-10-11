@@ -90,7 +90,7 @@ def generate_source(S,R,L,p_tup,BPF):
             fl.write('\n')
     with open('source_ptup.csv','w') as ftup:
         for i in range(len(p_tup)):
-            ftup.write(p_tup[i]+" ")
+            ftup.write(str(p_tup[i])+" ")
 
 
 nums_runs = 0
@@ -182,7 +182,7 @@ if choice.lower()=='n' or choice.lower()=='no':
         else:
             break
                 
-S,BPF,p_tup,R,L = Initialize(q,n,r,p,Ru,Ro,choice)
+S,BPF,p_tup,R,L = Initialize(q,n,r,p,Ru,Ro,prob_choice)
 
 
 generate_source(S,R,L,p_tup,BPF)
