@@ -1,20 +1,9 @@
 
 import csv
-
+import os
+import numpy as np
 def Initialize(q,n,r,p,Ru,Ro,choice):
-    
-    """
-This function creates 3 matrices of size [r+1,n].
 
-S - State Matrix
-    Either State 0 (w.p. 1-q) or 1 (w.p. q)  ... Bottom Row Seeded with State 2 
-    State 1 Sites above the bottom row are also designated as "revenue generators" with probability p
-R - Resistance Matrix
-    Values Based on Distribution with mean Ru and standard dev Ro
-L - Lattice (As Seen by the Company)
-    Sites are state -1 except for the bottom row seeds from matrix S
-       
-    """
     count=0
     S=np.zeros([r+1,n])
     R=np.ones([r+1,n])
@@ -79,6 +68,30 @@ L - Lattice (As Seen by the Company)
     L- Lattic
     """
     return  S,BPF,p_tup,R,L
+    
+def generate_source(S,R,L,p_tup,BPF):
+    with open('source_S.csv','w') as fs:
+        for i in range(len(S)):
+            for j in range(len(S[i])):
+                fs.write("%.2f"%round(S[i][j])+" ")
+            fs.write('\n')
+    with open('source_BPF.csv','w') as fBPF:
+        for i in range(len(BPF)):
+            fBPF.write("%.2f"%round(BPF[i]))
+    with open('source_R.csv','w') as fr:
+        for i in range(len(R)):
+            for j in range(len(R[i])):
+                fr.write("%.2f"%round(R[i][j])+" ")
+            fr.write('\n')
+    with open('source_L.csv','w') as fl:
+        for i in range(len(L)):
+            for j in range(len(L[i])):
+                fl.write("%.2f"%round(L[i][j])+" ")
+            fl.write('\n')
+    with open('source_ptup.csv','w') as ftup:
+        for i in range(len(p_tup)):
+            ftup.write(p_tup[i]+" ")
+
 
 nums_runs = 0
 q = 0.0
@@ -88,95 +101,104 @@ p = 0.0
 Ru = 0.0
 Ro = 0.0
 choice=str(raw_input("Would you like to perform multiple runs across multiple variables? (Y or N) "))
-        prob_choice=int(raw_input("How do you want the revenue generators within the lattice to be distributed?\n\n0.) Evenly Distributed\n1.) More Dense at the Bottom and More Valuable at the Top\n"))
-        if choice.lower()=='n' or choice.lower=='no':
-                names=['num_runs','q','n','r','p','Ru','Ro','pu','po','initial_b','b_percent','E_min', 't_max']
-                while True:
-                    try:
-                        num_runs=int(raw_input("How many runs would you like to conduct?"))
-                    except ValueError:
-                        print ("Sorry that input wasn't valid! Please enter an integer greater than zero!")
-                        continue
-                    if num_runs<=0:
-                        print ("Please input an integer greater than zero")
-                        continue
-                    else:
-                        break
-                while True:
-                    try:
-                        q=float(raw_input("What value for the percolation probability (0<q<1)?"))
-                    except ValueError:
-                        print ("Sorry that input wasn't valid! Please enter a real number between zero and one!")
-                        continue
-                    if q<0 or q>1:
-                        print ("Please input a probability between zero and one!")
-                        continue
-                    else:
-                        break
-                while True:
-                    try:
-                        n=int(raw_input("How many columns do you want to initialize the matrix to (n)?"))
-                    except ValueError:
-                        print ("Sorry that input wasn't valid! Please enter an integer greater than zero!")
-                        continue
-                    if n<=0:
-                        print ("Please input an integer greater than zero")
-                        continue
-                    else:
-                        break
-                while True:
-                    try:
-                        r=int(raw_input("What search radius (r) would you like to use? "))
-                    except ValueError:
-                        print ("Sorry that input wasn't valid! Please enter an integer greater than zero!")
-                        continue
-                    if r<=0:
-                        print ("Please input an integer greater than zero")
-                        continue
-                    else:
-                        break
-                while True:
-                    try:
-                        p=float(raw_input("What value for the probability that a state 1 site is a prize (p)?"))
-                    except ValueError:
-                        print ("Sorry that input wasn't valid! Please enter a real number between zero and one!")
-                        continue
-                    if p<0 or p>1:
-                        print ("Please input a probability between zero and one!")
-                        continue
-                    else:
-                        break
-                while True:
-                    try:
-                        Ru=float(raw_input("What is the mean of the values in the resistance matrix (Ru)?"))
-                    except ValueError:
-                        print ("Sorry that input wasn't valid! Please enter a real number greater than zero!")
-                        continue
-                    if Ru<0:
-                        print ("Please input a positive number!")
-                        continue
-                    else:
-                        break
-                while True:
-                    try:
-                        Ro=float(raw_input("What is the standard deviation of the values in the resistance matrix (Ro)?"))
-                    except ValueError:
-                        print ("Sorry that input wasn't valid! Please enter a real number greater than zero!")
-                        continue
-                    if Ro<0:
-                        print ("Please input a positive number!")
-                        continue
-                    else:
-                        break
+prob_choice=int(raw_input("How do you want the revenue generators within the lattice to be distributed?\n\n0.) Evenly Distributed\n1.) More Dense at the Bottom and More Valuable at the Top\n"))
+if choice.lower()=='n' or choice.lower()=='no':
+    names=['num_runs','q','n','r','p','Ru','Ro','pu','po','initial_b','b_percent','E_min', 't_max']
+    while True:
+        try:
+            num_runs=int(raw_input("How many runs would you like to conduct?"))
+        except ValueError:
+            print ("Sorry that input wasn't valid! Please enter an integer greater than zero!")
+            continue
+        if num_runs<=0:
+            print ("Please input an integer greater than zero")
+            continue
+        else:
+            break
+    while True:
+        try:
+            q=float(raw_input("What value for the percolation probability (0<q<1)?"))
+        except ValueError:
+            print ("Sorry that input wasn't valid! Please enter a real number between zero and one!")
+            continue
+        if q<0 or q>1:
+            print ("Please input a probability between zero and one!")
+            continue
+        else:
+            break
+    while True:
+        try:
+            n=int(raw_input("How many columns do you want to initialize the matrix to (n)?"))
+        except ValueError:
+            print ("Sorry that input wasn't valid! Please enter an integer greater than zero!")
+            continue
+        if n<=0:
+            print ("Please input an integer greater than zero")
+            continue
+        else:
+            break
+    while True:
+        try:
+            r=int(raw_input("What search radius (r) would you like to use? "))
+        except ValueError:
+            print ("Sorry that input wasn't valid! Please enter an integer greater than zero!")
+            continue
+        if r<=0:
+            print ("Please input an integer greater than zero")
+            continue
+        else:
+            break
+    while True:
+        try:
+            p=float(raw_input("What value for the probability that a state 1 site is a prize (p)?"))
+        except ValueError:
+            print ("Sorry that input wasn't valid! Please enter a real number between zero and one!")
+            continue
+        if p<0 or p>1:
+            print ("Please input a probability between zero and one!")
+            continue
+        else:
+            break
+    while True:
+        try:
+            Ru=float(raw_input("What is the mean of the values in the resistance matrix (Ru)?"))
+        except ValueError:
+            print ("Sorry that input wasn't valid! Please enter a real number greater than zero!")
+            continue
+        if Ru<0:
+            print ("Please input a positive number!")
+            continue
+        else:
+            break
+    while True:
+        try:
+            Ro=float(raw_input("What is the standard deviation of the values in the resistance matrix (Ro)?"))
+        except ValueError:
+            print ("Sorry that input wasn't valid! Please enter a real number greater than zero!")
+            continue
+        if Ro<0:
+            print ("Please input a positive number!")
+            continue
+        else:
+            break
                 
 S,BPF,p_tup,R,L = Initialize(q,n,r,p,Ru,Ro,choice)
 
-with open('source_s.csv','w') as fs:
-	for i in range(len(S)):
-		for j in range(len(S[i])):
-			fs.write("%.2f"%round(S[i][j])," ")
-		fs.write('\n')
-with open('source_BPF.csv','w') as fBPF:
-	for i in range(len(BPF)):
-		fBPF.write("%.2f"%round(BPF[i]))
-with open('source_ptup.csv','w') as ftup:
+
+generate_source(S,R,L,p_tup,BPF)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
