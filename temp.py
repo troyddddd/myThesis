@@ -183,7 +183,7 @@ def RD(x_val,y_val,num_sites,E,S,R,L):
                  
     return one_index_x,one_index_y  
     
-def twocheck(S,L,twos_i,twos_j,p_tup,p_win,win_col,j,strategy): #this function checks to see if states should be changed from 2-3
+def twocheck(S,L,twos_i,twos_j,p_tup,p_win,win_col,j,strategy,step_num): #this function checks to see if states should be changed from 2-3
     m=S.shape[0]
     n=S.shape[1]
     """ This function takes an i,j input of a lattice site that is known to be
@@ -219,9 +219,15 @@ def twocheck(S,L,twos_i,twos_j,p_tup,p_win,win_col,j,strategy): #this function c
         del twos_i[0]
         del twos_j[0]
         count=len(twos_i) #keeps track of how many sites that are now 2 still need checking
-    return S,p_tup,p_win,win_col
+        with open ("L_"+step_num+".csv",'w') as openfile:
+            for i in range(L.shape[0]):
+                for j in range(L.shape[1]):
+                    openfile.write(str(S[i][j])+' ')
+                openfile.write('\n')
+        openfile.close()
+    return S,p_tup,p_win,win_col,step_num
     
-def Search(S,R,L,r,E,fold,p_tup,individual_bankrupt,strategy,concur,filename): #searches squares within a given radius r to do R&D on.  This R&D effort is given by E and if successful states are changed from 1 to 2
+def Search(S,R,L,r,E,fold,p_tup,individual_bankrupt,strategy,concur,filename,step_num): #searches squares within a given radius r to do R&D on.  This R&D effort is given by E and if successful states are changed from 1 to 2
     """
     This is the key function where R&D search is performed.  It takes the coordinates from the 'Search_Index' function and if num_sites
     is greater than zero it continues on to perform the RD function.  After the RD function any states changed from -1 to 1 go onto further
@@ -283,7 +289,7 @@ def Search(S,R,L,r,E,fold,p_tup,individual_bankrupt,strategy,concur,filename): #
                     if count==1:
                         twos_i=[c]
                         twos_j=[d]
-                        Y=twocheck(S,L,twos_i,twos_j,p_tup,p_win,win_col,j,strategy)  #searches like a chain for further changes to state 2
+                        Y=twocheck(S,L,twos_i,twos_j,p_tup,p_win,win_col,j,strategy,step_num)  #searches like a chain for further changes to state 2
                         S=Y[0]
                         p_tup=Y[1]
                         p_win=Y[2]
@@ -523,7 +529,7 @@ def Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,
     
     while t<t_max and t!=-1:
         
-        p_win,win_col=Search(S,R,L,r,E,Fold,p_tup,individual_bankrupt,strategy,concur,filename)
+        p_win,win_col=Search(S,R,L,r,E,Fold,p_tup,individual_bankrupt,strategy,concur,filename,t)
        
         Frontier=BPF(S,Fold)
         
