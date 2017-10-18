@@ -24,6 +24,8 @@ from datetime import datetime
 import outputfile as op #self built function module
 import os
 import random_generator as rg
+import input_data as inp #self built function
+
 
 """Changes from Thesis 2.0:
 
@@ -46,68 +48,19 @@ L - Lattice (As Seen by the Company)
     Sites are state -1 except for the bottom row seeds from matrix S
        
     """
-    count=0
-    S=np.zeros([r+1,n])
-    R=np.ones([r+1,n])
-    L=np.ones([r+1,n])*-1
-    BPF=np.ones(n)*-1
-    BPF=BPF.astype(int)
-    p_tup=[]
-    
-    if choice==0:
-        for i in range(r+1):
-            for j in range(n):
-                rand=np.random.uniform(0,1)
-                Rrand=np.random.lognormal(Ru,Ro)
-                R[i,j]=Rrand
-                if rand<=q:
-                    S[i,j]=1
-                    if np.random.uniform(0,1)<=p and i!=0:
-                        p_tup.append((i,j))
-        for x in range(n):       #Changes half of the State 1 squares to State 2 in the bottom row
-            if S[0,x]==1:
-                seed=np.random.uniform(0,1)
-                if seed<=0.5:
-                    S[0,x]=2
-                    L[0,x]=S[0,x]
-                    count+=1
-                    BPF[x]=0
-        if count==0: #ensures that at least one state 2 will be seeded
-            random=np.random.randint(0,n)
-            S[0,random]=2
-            L[0,random]=S[0,random]
-            BPF[random]=0
-    if choice==1: #New to Thesis 5.0 this allows the matrices to be dependent upon the height.
-        for i in range(r+1):
-            for j in range(n):
-                rand=np.random.uniform(0,1)
-                Rrand=np.random.lognormal(Ru,Ro)
-                R[i,j]=Rrand
-                if rand<=q:
-                    S[i,j]=1
-                    if i!=0:
-                        if np.random.uniform(0,1)<=float(p)/np.log(9+i): #This p/i is what makes the probabiility of a revenue generator decrease as the height increases
-                            p_tup.append((i,j))
-        for x in range(n):       #Changes half of the State 1 squares to State 2 in the bottom row
-            if S[0,x]==1:
-                seed=np.random.uniform(0,1)
-                if seed<=0.5:
-                    S[0,x]=2
-                    L[0,x]=S[0,x]
-                    count+=1
-                    BPF[x]=0
-        if count==0: #ensures that at least one state 2 will be seeded
-            random=np.random.randint(0,n)
-            S[0,random]=2
-            L[0,random]=S[0,random]
-            BPF[random]=0
-    
+
+    S = inp.data_to_srl('source_S.csv')
+    R = inp.data_to_srl('source_R.csv')
+    L = inp.data_to_srl('source_L.csv')
+    BPF =inp.data_to_BPF('source_BPF.csv')
+    p_tup = inp.data_to_ptup('source_ptup.csv')
+
     """
     S - State Matrix
     BPF - Initial Best Practice Frontier
     p_tup - Array of tuples designating the sites designated as "revenue generators."
     R - Resistance Matrix
-    L- Lattic
+    L- Lattice
     """
     return  S,BPF,p_tup,R,L
     
@@ -425,7 +378,8 @@ def lattice(L,names,val,p_win_old,con_distance,strategy):
     temps = temps + "Distance: " + str(con_distance) + "Direction: " + str(strategy)
     plt.title(temps)
     #plt.draw()
-    plt.show()  
+    plt.show()
+    fig.savefig(temps)  
     
 def plot(X,Y,Z,names,val,one,two,zlabel):
     """
@@ -513,11 +467,6 @@ def line_plot(X,Y,names,val,metric_num,val_metric,y_label):
     
     plt.legend(line_array,bbox_to_anchor=(1, .6), loc=2, borderaxespad=0.)
     print (str(datetime.now()))
-
-        
-
-   
-    
     plt.show()
     
 def Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,concur):

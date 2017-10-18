@@ -73,11 +73,11 @@ def generate_source(S,R,L,p_tup,BPF):
     with open('source_S.csv','w') as fs:
         for i in range(len(S)):
             for j in range(len(S[i])):
-                fs.write("%.2f"%round(S[i][j])+" ")
+                fs.write(str(S[i][j])+" ")
             fs.write('\n')
     with open('source_BPF.csv','w') as fBPF:
         for i in range(len(BPF)):
-            fBPF.write("%.2f"%round(BPF[i]))
+            fBPF.write(str(BPF[i])+" ")
     with open('source_R.csv','w') as fr:
         for i in range(len(R)):
             for j in range(len(R[i])):
@@ -86,11 +86,12 @@ def generate_source(S,R,L,p_tup,BPF):
     with open('source_L.csv','w') as fl:
         for i in range(len(L)):
             for j in range(len(L[i])):
-                fl.write("%.2f"%round(L[i][j])+" ")
+                fl.write(str(L[i][j])+" ")
             fl.write('\n')
-    with open('source_ptup.csv','w') as ftup:
-        for i in range(len(p_tup)):
-            ftup.write(str(p_tup[i])+" ")
+
+    with open('source_ptup.csv', 'w') as fp:
+
+        fp.write('\n'.join('%s %s' % x for x in p_tup))
 
 
 nums_runs = 0
