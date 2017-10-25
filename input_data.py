@@ -37,4 +37,3 @@ def data_to_ptup(filename):
 			result.append((line.split(" ")[0],line.split(" ")[1]))
 	f.close()
 	return result
-print data_to_srl('source_L.csv')

@@ -219,15 +219,10 @@ def twocheck(S,L,twos_i,twos_j,p_tup,p_win,win_col,j,strategy,step_num): #this f
         del twos_i[0]
         del twos_j[0]
         count=len(twos_i) #keeps track of how many sites that are now 2 still need checking
-        with open ("L_"+step_num+".csv",'w') as openfile:
-            for i in range(L.shape[0]):
-                for j in range(L.shape[1]):
-                    openfile.write(str(S[i][j])+' ')
-                openfile.write('\n')
-        openfile.close()
+        
     return S,p_tup,p_win,win_col,step_num
     
-def Search(S,R,L,r,E,fold,p_tup,individual_bankrupt,strategy,concur,filename,step_num): #searches squares within a given radius r to do R&D on.  This R&D effort is given by E and if successful states are changed from 1 to 2
+def Search(S,R,L,r,E,fold,p_tup,individual_bankrupt,strategy,concur,filename,step_num,check_height): #searches squares within a given radius r to do R&D on.  This R&D effort is given by E and if successful states are changed from 1 to 2
     """
     This is the key function where R&D search is performed.  It takes the coordinates from the 'Search_Index' function and if num_sites
     is greater than zero it continues on to perform the RD function.  After the RD function any states changed from -1 to 1 go onto further
@@ -260,6 +255,16 @@ def Search(S,R,L,r,E,fold,p_tup,individual_bankrupt,strategy,concur,filename,ste
                         for eley in y_temp_val:
                             y_val.append(eley)
                         num_sites = num_sites + temp_num_sites
+            '''
+            only search for the max bpf
+            '''
+            if check_height == True:
+                temp_sqeuence = sorted(rg.generate_sequence(j,n,5))
+                candidate = []
+                for ele in temp_sequence:
+                    candidate.append((ele,fold[ele]))
+                max_candidate = max(candidate, key=lambda item: item[0])
+                x_val,y_val,num_sites = Search_Index(m,n,max_candidate[1],max_candidate[0],r,L)
             if num_sites>0:
                 one_index=RD(x_val,y_val,num_sites,E[j],S,R,L)
                 x_val=one_index[0]
@@ -294,6 +299,12 @@ def Search(S,R,L,r,E,fold,p_tup,individual_bankrupt,strategy,concur,filename,ste
                         p_tup=Y[1]
                         p_win=Y[2]
                         win_col=Y[3]
+    with open ("step/L_"+filename+"_"+str(step_num)+".csv",'w') as openfile:
+        for i in range(L.shape[0]):
+            for j in range(L.shape[1]):
+                openfile.write(str(S[i][j])+' ')
+            openfile.write('\n')
+    openfile.close()
 
     return p_win,win_col #array of tuples corresponding to the 'prizes' discovered during this round of Search and win_col is an array of the columns that were doing search when the prizes were found
     
@@ -475,7 +486,7 @@ def line_plot(X,Y,names,val,metric_num,val_metric,y_label):
     print (str(datetime.now()))
     plt.show()
     
-def Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,concur):
+def Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,concur,shared):
     """
     This is the key function that allows the simulation to run. It runs at most t_max iterations of the Search function.  It updates all
     the matrices, BPF, budgets, etc. If ever the budget goes below zero the iteration stops and a 'Bankruptcy' is called.
@@ -526,7 +537,6 @@ def Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,
     max_BPF=[0]
     B_percent.append(1)
     count=0
-    
     while t<t_max and t!=-1:
         
         p_win,win_col=Search(S,R,L,r,E,Fold,p_tup,individual_bankrupt,strategy,concur,filename,t)
@@ -535,7 +545,6 @@ def Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,
         
         for j in range(n):
             individual_b[j]=individual_b[j]-E[j]
-
         individual_b,p_win_old,p_tup=win(individual_b,p_win_old,p_win,pu,po,p_tup,win_col,choice)
         filename1 = 'IndividualBudget_' + strategy + "_Concurrence: "+str(concur)
         f2 = open(filename1,'a')
@@ -556,7 +565,14 @@ def Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,
            
             
         Fold=Frontier
-        
+        if shared == True:
+            '''
+            sum the total available budget from the previous iteration
+            and put it into the differernt evenly.
+            '''
+            individual_amount = total_b/len(individial_b)
+            for i in range(len(individial_b)):
+                individual_b[i] = individual_amount
         for a in range(n):
             E[a]=individual_b[a]*b_percent
             if E[a]<E_min and individual_b[a]>=E_min:
@@ -587,7 +603,7 @@ def Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,
     return L,T,B,B_percent,Bankrupt,t_Bankrupt,Frontier,p_win_old,max_BPF
     
     
-def runs(runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,concur):
+def runs(runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,concur,shared):
     """This function simply performs multiple runs of the Iteration function.  It also performs some statistics, basically
     averaging the key metrics over the number of runs"""
     max_BPF=[]
@@ -606,7 +622,7 @@ def runs(runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strateg
    
     x=0
     while x<runs:
-        L,T,B,B_percent,Bankrupt,t_Bankrupt,Frontier,p_win_old,max_BPF_array=Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,concur)
+        L,T,B,B_percent,Bankrupt,t_Bankrupt,Frontier,p_win_old,max_BPF_array=Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,concur,shared)
         
         max_BPF_val=max(Frontier)
         average_BPF_val=np.average(Frontier)
@@ -875,10 +891,10 @@ def Percolation():
                 val = [num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max]
                 val1 = [num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max]
                 val2 = [num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max]
-                Z = runs(num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,prob_choice,'all',False)
-                Z1 = runs(num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,prob_choice,'ud',False)
-                Z2 = runs(num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,prob_choice,'lr',False)
-                Z3 = runs(num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,prob_choice,'all',True)
+                Z = runs(num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,prob_choice,'all',False,False,False)
+                Z1 = runs(num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,prob_choice,'ud',False,False,False)
+                Z2 = runs(num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,prob_choice,'lr',False,False,False)
+                Z3 = runs(num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,prob_choice,'all',True,False,False)
                 if num_runs==1:
                     o=False
                     while o==False:
