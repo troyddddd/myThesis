@@ -21,10 +21,6 @@ import random as rand   #First used in Thesis 2.0
 import matplotlib.patches as mpatches
 import matplotlib.lines as mlines
 from datetime import datetime
-import outputfile as op #self built function module
-import os
-import random_generator as rg
-import input_data as inp #self built function
 
 
 """Changes from Thesis 2.0:
@@ -48,19 +44,68 @@ L - Lattice (As Seen by the Company)
     Sites are state -1 except for the bottom row seeds from matrix S
        
     """
-
-    S = inp.data_to_srl('source_S.csv')
-    R = inp.data_to_srl('source_R.csv')
-    L = inp.data_to_srl('source_L.csv')
-    BPF =inp.data_to_BPF('source_BPF.csv')
-    p_tup = inp.data_to_ptup('source_ptup.csv')
-
+    count=0
+    S=np.zeros([r+1,n])
+    R=np.ones([r+1,n])
+    L=np.ones([r+1,n])*-1
+    BPF=np.ones(n)*-1
+    BPF=BPF.astype(int)
+    p_tup=[]
+    
+    if choice==0:
+        for i in range(r+1):
+            for j in range(n):
+                rand=np.random.uniform(0,1)
+                Rrand=np.random.lognormal(Ru,Ro)
+                R[i,j]=Rrand
+                if rand<=q:
+                    S[i,j]=1
+                    if np.random.uniform(0,1)<=p and i!=0:
+                        p_tup.append((i,j))
+        for x in range(n):       #Changes half of the State 1 squares to State 2 in the bottom row
+            if S[0,x]==1:
+                seed=np.random.uniform(0,1)
+                if seed<=0.5:
+                    S[0,x]=2
+                    L[0,x]=S[0,x]
+                    count+=1
+                    BPF[x]=0
+        if count==0: #ensures that at least one state 2 will be seeded
+            random=np.random.randint(0,n)
+            S[0,random]=2
+            L[0,random]=S[0,random]
+            BPF[random]=0
+    if choice==1: #New to Thesis 5.0 this allows the matrices to be dependent upon the height.
+        for i in range(r+1):
+            for j in range(n):
+                rand=np.random.uniform(0,1)
+                Rrand=np.random.lognormal(Ru,Ro)
+                R[i,j]=Rrand
+                if rand<=q:
+                    S[i,j]=1
+                    if i!=0:
+                        if np.random.uniform(0,1)<=float(p)/np.log(9+i): #This p/i is what makes the probabiility of a revenue generator decrease as the height increases
+                            p_tup.append((i,j))
+        for x in range(n):       #Changes half of the State 1 squares to State 2 in the bottom row
+            if S[0,x]==1:
+                seed=np.random.uniform(0,1)
+                if seed<=0.5:
+                    S[0,x]=2
+                    L[0,x]=S[0,x]
+                    count+=1
+                    BPF[x]=0
+        if count==0: #ensures that at least one state 2 will be seeded
+            random=np.random.randint(0,n)
+            S[0,random]=2
+            L[0,random]=S[0,random]
+            BPF[random]=0
+    
     """
     S - State Matrix
     BPF - Initial Best Practice Frontier
     p_tup - Array of tuples designating the sites designated as "revenue generators."
     R - Resistance Matrix
-    L- Lattice
+    L- Lattic
     """
     return  S,BPF,p_tup,R,L
     
@@ -183,7 +228,7 @@ def RD(x_val,y_val,num_sites,E,S,R,L):
                  
     return one_index_x,one_index_y  
     
-def twocheck(S,L,twos_i,twos_j,p_tup,p_win,win_col,j,strategy,step_num): #this function checks to see if states should be changed from 2-3
+def twocheck(S,L,twos_i,twos_j,p_tup,p_win,win_col,j): #this function checks to see if states should be changed from 2-3
     m=S.shape[0]
     n=S.shape[1]
     """ This function takes an i,j input of a lattice site that is known to be
@@ -194,35 +239,34 @@ def twocheck(S,L,twos_i,twos_j,p_tup,p_win,win_col,j,strategy,step_num): #this f
     while count>0:
         i=twos_i[0] #value for the row
         j=twos_j[0] #value for the column (firm)
-        if strategy == 'all' or strategy == 'ud':
-            for x in range(max(0,i-1),min(m,i+2)): #searches up and down
-                if L[x,j]==1:
-                    S[x,j]=2
-                    L[x,j]=S[x,j]
-                    twos_i.append(x)
-                    twos_j.append(j)
-                    if (x,j) in p_tup and ((x,j) not in p_win):
-                        p_win.append((x,j))
-                        win_col.append(j)
+        for x in range(max(0,i-1),min(m,i+2)): #searches up and down
+                    if L[x,j]==1:
+                        S[x,j]=2
+                        L[x,j]=S[x,j]
+                        twos_i.append(x)
+                        twos_j.append(j)
+                        if (x,j) in p_tup and ((x,j) not in p_win):
+                                    p_win.append((x,j))
+                                    win_col.append(j)
                                     
-        if strategy == 'all' or strategy == 'lr':             
-            for y in range(max(0,j-1),min(j+2,n)): #searches left and right
-                if L[i,y]==1:
-                    S[i,y]=2
-                    L[i,y]=S[i,y]
-                    twos_i.append(i)
-                    twos_j.append(y)  
-                    if (i,y) in p_tup and ((i,y) not in p_win):
-                        p_win.append((i,y))
-                        win_col.append(j)
+                        
+                      
+        for y in range(max(0,j-1),min(j+2,n)): #searches left and right
+                     if L[i,y]==1:
+                        S[i,y]=2
+                        L[i,y]=S[i,y]
+                        twos_i.append(i)
+                        twos_j.append(y)  
+                        if (i,y) in p_tup and ((i,y) not in p_win):
+                                    p_win.append((i,y))
+                                    win_col.append(j)
                                     
         del twos_i[0]
         del twos_j[0]
         count=len(twos_i) #keeps track of how many sites that are now 2 still need checking
-        
-    return S,p_tup,p_win,win_col,step_num
+    return S,p_tup,p_win,win_col
     
-def Search(S,R,L,r,E,fold,p_tup,individual_bankrupt,strategy,concur,filename,step_num,check_height): #searches squares within a given radius r to do R&D on.  This R&D effort is given by E and if successful states are changed from 1 to 2
+def Search(S,R,L,r,E,fold,p_tup,individual_bankrupt): #searches squares within a given radius r to do R&D on.  This R&D effort is given by E and if successful states are changed from 1 to 2
     """
     This is the key function where R&D search is performed.  It takes the coordinates from the 'Search_Index' function and if num_sites
     is greater than zero it continues on to perform the RD function.  After the RD function any states changed from -1 to 1 go onto further
@@ -240,40 +284,15 @@ def Search(S,R,L,r,E,fold,p_tup,individual_bankrupt,strategy,concur,filename,ste
         BPF_y=j
         BPF_x=fold[j]
         if BPF_x>=0 and individual_bankrupt[j]==0: #ensures that there is a BPF point around with R&D can be conducted and the column has a budget
-            op.writeBPF(BPF_y,False,filename)
-            op.writeBPF(BPF_x,True,filename)
             x_val,y_val,num_sites=Search_Index(m,n,BPF_x,BPF_y,r,L)
-            if concur == True:
-                temp_sequence = sorted(rg.generate_sequence(j,n,5))
-                for ele in temp_sequence:
-                    if fold[ele] >= 0:
-                        op.writeBPF(ele,False,filename)
-                        op.writeBPF(fold[ele],True,filename)
-                        x_temp_val,y_temp_val,temp_num_sites = Search_Index(m,n,fold[ele],ele,r,L)
-                        for elex in x_temp_val:
-                            x_val.append(elex)
-                        for eley in y_temp_val:
-                            y_val.append(eley)
-                        num_sites = num_sites + temp_num_sites
-            '''
-            only search for the max bpf
-            '''
-            if check_height == True:
-                temp_sqeuence = sorted(rg.generate_sequence(j,n,5))
-                candidate = []
-                for ele in temp_sequence:
-                    candidate.append((ele,fold[ele]))
-                max_candidate = max(candidate, key=lambda item: item[0])
-                x_val,y_val,num_sites = Search_Index(m,n,max_candidate[1],max_candidate[0],r,L)
             if num_sites>0:
                 one_index=RD(x_val,y_val,num_sites,E[j],S,R,L)
                 x_val=one_index[0]
                 y_val=one_index[1]
                 for v in range(len(one_index[0])):
-                    c=x_val[v]
-                    d=y_val[v]
-                    count=0
-                    if strategy == 'ud' or strategy == 'all':
+                        c=x_val[v]
+                        d=y_val[v]
+                        count=0
                         for x in range(max(0,c-1),min(m,c+2)): #searches up and down
                             if S[x,d]==2:
                                 S[c,d]=2
@@ -282,7 +301,6 @@ def Search(S,R,L,r,E,fold,p_tup,individual_bankrupt,strategy,concur,filename,ste
                                     p_win.append((c,d))
                                     win_col.append(j)
                                 count=1
-                    if strategy == 'lr' or strategy == 'all':
                         for y in range(max(0,d-1),min(d+2,n)): #searches left and right
                             if S[c,y]==2:
                                 S[c,d]=2
@@ -291,20 +309,14 @@ def Search(S,R,L,r,E,fold,p_tup,individual_bankrupt,strategy,concur,filename,ste
                                     p_win.append((c,d))
                                     win_col.append(j)
                                 count=1
-                    if count==1:
-                        twos_i=[c]
-                        twos_j=[d]
-                        Y=twocheck(S,L,twos_i,twos_j,p_tup,p_win,win_col,j,strategy,step_num)  #searches like a chain for further changes to state 2
-                        S=Y[0]
-                        p_tup=Y[1]
-                        p_win=Y[2]
-                        win_col=Y[3]
-    with open ("step/L_"+filename+"_"+str(step_num)+".csv",'w') as openfile:
-        for i in range(L.shape[0]):
-            for j in range(L.shape[1]):
-                openfile.write(str(S[i][j])+' ')
-            openfile.write('\n')
-    openfile.close()
+                        if count==1:
+                            twos_i=[c]
+                            twos_j=[d]
+                            Y=twocheck(S,L,twos_i,twos_j,p_tup,p_win,win_col,j)  #searches like a chain for further changes to state 2
+                            S=Y[0]
+                            p_tup=Y[1]
+                            p_win=Y[2]
+                            win_col=Y[3]
 
     return p_win,win_col #array of tuples corresponding to the 'prizes' discovered during this round of Search and win_col is an array of the columns that were doing search when the prizes were found
     
@@ -334,7 +346,7 @@ def win(individual_budget,p_win_old,p_win,pu,po,p_tup,win_col,choice):
         
     return individual_budget,p_win_old, p_tup  
     
-def lattice(L,names,val,p_win_old,con_distance,strategy):
+def lattice(L,names,val,p_win_old):
     """
     This plots the Lattice grid.
     
@@ -391,12 +403,9 @@ def lattice(L,names,val,p_win_old,con_distance,strategy):
                      
     fig.text(.01,.5,txt,bbox=dict(facecolor='white', ec='black', alpha=1.0),fontsize=15) #This gives the parameters of the run conducted
     plt.pcolormesh(y,x,np.array(X),cmap=cmap,norm=norm,edgecolor='k')
-    temps= ""
-    temps = temps + "Distance: " + str(con_distance) + "Direction: " + str(strategy)
-    plt.title(temps)
+       
     #plt.draw()
-    plt.show()
-    fig.savefig(temps)  
+    plt.show()  
     
 def plot(X,Y,Z,names,val,one,two,zlabel):
     """
@@ -484,37 +493,25 @@ def line_plot(X,Y,names,val,metric_num,val_metric,y_label):
     
     plt.legend(line_array,bbox_to_anchor=(1, .6), loc=2, borderaxespad=0.)
     print (str(datetime.now()))
+
+        
+
+   
+    
     plt.show()
     
-def Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,concur,shared,check_height):
+def Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice):
     """
     This is the key function that allows the simulation to run. It runs at most t_max iterations of the Search function.  It updates all
     the matrices, BPF, budgets, etc. If ever the budget goes below zero the iteration stops and a 'Bankruptcy' is called.
     """
     
     S,Fold,p_tup,R,L=Initialize(q,n,r,p,Ru,Ro,choice)
-    filename = 'result_' + strategy + "_Concurrence: "+str(concur)
-    f=open(filename,'w')
-    f.write('S matrix: '+'\n')
-    f.close()
-    op.writeOriginalmatrix(S,'a',filename)
-    f=open(filename,'a')
-    f.write('R matrix: '+'\n')
-    f.close()
-    op.writeOriginalmatrix(R,'a',filename)
-    f=open(filename,'a')
-    f.write('L matrix: '+'\n')
-    f.close()
-    op.writeOriginalmatrix(L,'a',filename)
-
     p_win_old=[]
   
     individual_b=[initial_b]*n #difference from thesis 3.0 ...  each column now has a budget separate from the other columns
     total_b=float(initial_b)*n  #key change from thesis 3.0
-    filename1 = 'IndividualBudget_' + strategy + "_Concurrence: "+str(concur)
-    f2 = open(filename1,'w')
-    f2.write(str(individual_b)+'\n')
-    f2.close()
+    
     total_initial_b=total_b
    
     
@@ -537,20 +534,20 @@ def Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,
     max_BPF=[0]
     B_percent.append(1)
     count=0
+    
     while t<t_max and t!=-1:
         
-        p_win,win_col=Search(S,R,L,r,E,Fold,p_tup,individual_bankrupt,strategy,concur,filename,t,check_height)
+        p_win,win_col=Search(S,R,L,r,E,Fold,p_tup,individual_bankrupt)
        
         Frontier=BPF(S,Fold)
         
         for j in range(n):
             individual_b[j]=individual_b[j]-E[j]
+
         individual_b,p_win_old,p_tup=win(individual_b,p_win_old,p_win,pu,po,p_tup,win_col,choice)
-        filename1 = 'IndividualBudget_' + strategy + "_Concurrence: "+str(concur)
-        f2 = open(filename1,'a')
-        f2.write(str(individual_b)+'\n')
-        f2.close()
+        
         total_b=sum(individual_b)
+        
         
         for c in range(n):
             if individual_b[c]<0.0001:
@@ -565,14 +562,7 @@ def Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,
            
             
         Fold=Frontier
-        if shared == True:
-            '''
-            sum the total available budget from the previous iteration
-            and put it into the differernt evenly.
-            '''
-            individual_amount = total_b/len(individial_b)
-            for i in range(len(individial_b)):
-                individual_b[i] = individual_amount
+        
         for a in range(n):
             E[a]=individual_b[a]*b_percent
             if E[a]<E_min and individual_b[a]>=E_min:
@@ -603,7 +593,7 @@ def Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,
     return L,T,B,B_percent,Bankrupt,t_Bankrupt,Frontier,p_win_old,max_BPF
     
     
-def runs(runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,concur,shared,check_height):
+def runs(runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice):
     """This function simply performs multiple runs of the Iteration function.  It also performs some statistics, basically
     averaging the key metrics over the number of runs"""
     max_BPF=[]
@@ -622,7 +612,7 @@ def runs(runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strateg
    
     x=0
     while x<runs:
-        L,T,B,B_percent,Bankrupt,t_Bankrupt,Frontier,p_win_old,max_BPF_array=Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,concur,shared,check_height)
+        L,T,B,B_percent,Bankrupt,t_Bankrupt,Frontier,p_win_old,max_BPF_array=Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice)
         
         max_BPF_val=max(Frontier)
         average_BPF_val=np.average(Frontier)
@@ -739,29 +729,6 @@ def Percolation():
     """Function combining all of the previous into a nicer user interface.  It asks for user inputs for the parameters."""
     
     print ("\nWelcome to the Percolation Simulator!\n")
-    """these variabels are for retrieving value from input text file"""
-    pre_run = 0
-    pre_q = 0.0
-    pre_n = 0
-    pre_r = 0
-    pre_p = 0.0
-    pre_Ru = 0
-    pre_Ro = 0
-    pre_pu = 0.0
-    pre_po = 0.0
-    pre_initial_b = 0.0
-    pre_b_percent = 0.0
-    pre_E_min = 0.0
-    pre_t_max = 0
-    try:
-        with open ("input.txt",'r') as f:
-                try:
-                    for line in f:
-                        pre_run,pre_q,pre_n,pre_r,pre_p,pre_Ru,pre_Ro,pre_pu,pre_po,pre_initial_b,pre_b_percent,pre_E_min,pre_t_max=(ele.strip() for ele in line.split(" "))
-                except TypeError:
-                        print "Not enough number of parateters. Make sure that you seperate the parameters by one space. "
-    except:
-        print "no such an input file. please make a data file named 'input.txt', then store the necessary data inside and seperate the data by one space."
     d=False
     while d==False:
         choice=str(raw_input("Would you like to perform multiple runs across multiple variables? (Y or N) "))
@@ -770,8 +737,7 @@ def Percolation():
                 names=['num_runs','q','n','r','p','Ru','Ro','pu','po','initial_b','b_percent','E_min', 't_max']
                 while True:
                     try:
-                        #num_runs=int(raw_input("How many runs would you like to conduct?"))
-                        num_runs = int(pre_run)
+                        num_runs=int(raw_input("How many runs would you like to conduct?"))
                     except ValueError:
                         print ("Sorry that input wasn't valid! Please enter an integer greater than zero!")
                         continue
@@ -782,8 +748,7 @@ def Percolation():
                         break
                 while True:
                     try:
-                        #q=float(raw_input("What value for the percolation probability (0<q<1)?"))
-                        q = float(pre_q)
+                        q=float(raw_input("What value for the percolation probability (0<q<1)?"))
                     except ValueError:
                         print ("Sorry that input wasn't valid! Please enter a real number between zero and one!")
                         continue
@@ -794,8 +759,7 @@ def Percolation():
                         break
                 while True:
                     try:
-                        #n=int(raw_input("How many columns do you want to initialize the matrix to (n)?"))
-                        n = int(pre_n)
+                        n=int(raw_input("How many columns do you want to initialize the matrix to (n)?"))
                     except ValueError:
                         print ("Sorry that input wasn't valid! Please enter an integer greater than zero!")
                         continue
@@ -806,8 +770,7 @@ def Percolation():
                         break
                 while True:
                     try:
-                        #r=int(raw_input("What search radius (r) would you like to use? "))
-                        r = int(pre_r)
+                        r=int(raw_input("What search radius (r) would you like to use? "))
                     except ValueError:
                         print ("Sorry that input wasn't valid! Please enter an integer greater than zero!")
                         continue
@@ -818,8 +781,7 @@ def Percolation():
                         break
                 while True:
                     try:
-                        #p=float(raw_input("What value for the probability that a state 1 site is a prize (p)?"))
-                        p = float(pre_p)
+                        p=float(raw_input("What value for the probability that a state 1 site is a prize (p)?"))
                     except ValueError:
                         print ("Sorry that input wasn't valid! Please enter a real number between zero and one!")
                         continue
@@ -830,8 +792,7 @@ def Percolation():
                         break
                 while True:
                     try:
-                        #Ru=float(raw_input("What is the mean of the values in the resistance matrix (Ru)?"))
-                        Ru = float(pre_Ru)
+                        Ru=float(raw_input("What is the mean of the values in the resistance matrix (Ru)?"))
                     except ValueError:
                         print ("Sorry that input wasn't valid! Please enter a real number greater than zero!")
                         continue
@@ -842,8 +803,7 @@ def Percolation():
                         break
                 while True:
                     try:
-                        #Ro=float(raw_input("What is the standard deviation of the values in the resistance matrix (Ro)?"))
-                        Ro = float(pre_Ro)
+                        Ro=float(raw_input("What is the standard deviation of the values in the resistance matrix (Ro)?"))
                     except ValueError:
                         print ("Sorry that input wasn't valid! Please enter a real number greater than zero!")
                         continue
@@ -854,8 +814,7 @@ def Percolation():
                         break
                 while True:
                     try:
-                        #pu=float(raw_input("What is the mean of the prize value (pu)?"))
-                        pu = float(pre_pu)
+                        pu=float(raw_input("What is the mean of the prize value (pu)?"))
                     except ValueError:
                         print ("Sorry that input wasn't valid! Please enter a real number greater than zero!")
                         continue
@@ -866,8 +825,7 @@ def Percolation():
                         break
                 while True:
                     try:
-                        #po=float(raw_input("What is the standard deviation of the prize value (po)?"))
-                        po = float(pre_po)
+                        po=float(raw_input("What is the standard deviation of the prize value (po)?"))
                     except ValueError:
                         print ("Sorry that input wasn't valid! Please enter a real number greater than zero!")
                         continue
@@ -878,8 +836,7 @@ def Percolation():
                         break
                 while True:
                     try:
-                        #initial_b=float(raw_input("What is the starting budget (per column) for the company (initial_b)?"))
-                        initial_b = float(pre_initial_b)
+                        initial_b=float(raw_input("What is the starting budget (per column) for the company (initial_b)?"))
                     except ValueError:
                         print ("Sorry that input wasn't valid! Please enter a real number greater than zero!")
                         continue
@@ -890,8 +847,7 @@ def Percolation():
                         break
                 while True:
                     try:
-                        #b_percent=float(raw_input("What percentage of the remaining budget do you want given to R&D search each period (b_percent)?"))
-                        b_percent = float(pre_b_percent)
+                        b_percent=float(raw_input("What percentage of the remaining budget do you want given to R&D search each period (b_percent)?"))
                     except ValueError:
                         print ("Sorry that input wasn't valid! Please enter a real number between zero and one!")
                         continue
@@ -902,8 +858,7 @@ def Percolation():
                         break
                 while True:
                     try:
-                        #E_min=float(raw_input("What is the minimum amount of budget that will be given to each lattice site every R&D period (E_min)?"))
-                        E_min = float(pre_E_min)
+                        E_min=float(raw_input("What is the minimum amount of budget that will be given to each lattice site every R&D period (E_min)?"))
                     except ValueError:
                         print ("Sorry that input wasn't valid! Please enter a real number between zero and the inital budget ",initial_b,"!")
                         continue
@@ -914,8 +869,7 @@ def Percolation():
                         break
                 while True:
                     try:
-                        #t_max=int(raw_input("What is the maximum number of iterations (t_max) you want each run to conudct?"))
-                        t_max = int(pre_t_max)
+                        t_max=int(raw_input("What is the maximum number of iterations (t_max) you want each run to conudct?"))
                     except ValueError:
                         print ("Sorry that input wasn't valid! Please enter an integer greater than zero!")
                         continue
@@ -924,40 +878,23 @@ def Percolation():
                         continue
                     else:
                         break
-                val = [num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max]
-                val1 = [num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max]
-                val2 = [num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max]
-                Z = runs(num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,prob_choice,'all',False,False,False)
-                Z1 = runs(num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,prob_choice,'ud',False,False,False)
-                Z2 = runs(num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,prob_choice,'lr',False,False,False)
-                Z3 = runs(num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,prob_choice,'all',True,False,False)
+                val=[num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max]
+                Z=runs(num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,prob_choice)
                 if num_runs==1:
                     o=False
                     while o==False:
                         lat_choice=raw_input("Would you like to display a graph of the final lattice structure? (Y or N)")
                         if lat_choice.lower()=='y' or lat_choice.lower()=='yes':
-                            lattice(Z[0],names,val,Z[8],0,'all')
-                            lattice(Z1[0],names,val,Z1[8],0,'up-down')
-                            lattice(Z2[0],names,val,Z2[8],0,'left-right')
-                            lattice(Z3[0],names,val,Z3[8],20,'all')
+                            lattice(Z[0],names,val,Z[8])
                             o=True
                         elif lat_choice.lower()=='no' or lat_choice.lower()=='n':
                             o=True
                         else:
                             print("Not a valid entry! Please enter yes (Y) or no (N). ")
                 print "Statistics"
-                print "Max_BPF_Average all direction = ",Z[1]
-                print "Max_BPF_Average up and down = ", Z1[1]
-                print "Max_BPF_Average left and right = ", Z2[1]
-                print "Max_BPF_Average all direction and 20: ",Z3[1]
-                print "Average Percent of Initial Budget Remaining all direction = ",Z[4]*100
-                print "Average Percent of Initial Budget Remaining up and down = ",Z1[4]*100
-                print "Average Percent of Initial Budget Remaining left and right = ",Z2[4]*100
-                print "Average Percent of Initial Budget Remaining all direction and 20 = ",Z3[4]*100
-                print "All Direction: Number of Times Gone Bankrupt = ",Z[5], " This means there was a ",Z[6],"% Bankruptcy rate!"
-                print "Up and down: Number of Times Gone Bankrupt = ",Z1[5], " This means there was a ",Z1[6],"% Bankruptcy rate!"
-                print "Left and right: Number of Times Gone Bankrupt = ",Z2[5], " This means there was a ",Z2[6],"% Bankruptcy rate!"
-                print "All direction 20: Number of Times Gone Bankrupt =",Z3[5]," This means there was a ",Z3[6],"% Bankruptcy rate!"
+                print "Max_BPF_Average = ",Z[1]
+                print "Average Percent of Initial Budget Remaining = ",Z[4]*100
+                print "Number of Times Gone Bankrupt = ",Z[5], " This means there was a ",Z[6],"% Bankruptcy rate!"
                 d=True
         elif choice.lower()=='y' or choice.lower=='yes':
             s=False
