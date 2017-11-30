@@ -729,6 +729,28 @@ def Percolation():
     """Function combining all of the previous into a nicer user interface.  It asks for user inputs for the parameters."""
     
     print ("\nWelcome to the Percolation Simulator!\n")
+    pre_run = 0
+    pre_q = 0.0
+    pre_n = 0
+    pre_r = 0
+    pre_p = 0.0
+    pre_Ru = 0
+    pre_Ro = 0
+    pre_pu = 0.0
+    pre_po = 0.0
+    pre_initial_b = 0.0
+    pre_b_percent = 0.0
+    pre_E_min = 0.0
+    pre_t_max = 0
+    try:
+        with open ("input.txt",'r') as f:
+                try:
+                    for line in f:
+                        pre_run,pre_q,pre_n,pre_r,pre_p,pre_Ru,pre_Ro,pre_pu,pre_po,pre_initial_b,pre_b_percent,pre_E_min,pre_t_max=(ele.strip() for ele in line.split(" "))
+                except TypeError:
+                        print "Not enough number of parateters. Make sure that you seperate the parameters by one space. "
+    except:
+        print "no such an input file. please make a data file named 'input.txt', then store the necessary data inside and seperate the data by one space."
     d=False
     while d==False:
         choice=str(raw_input("Would you like to perform multiple runs across multiple variables? (Y or N) "))
@@ -737,7 +759,8 @@ def Percolation():
                 names=['num_runs','q','n','r','p','Ru','Ro','pu','po','initial_b','b_percent','E_min', 't_max']
                 while True:
                     try:
-                        num_runs=int(raw_input("How many runs would you like to conduct?"))
+                        #num_runs=int(raw_input("How many runs would you like to conduct?"))
+                        num_runs = int(pre_run)
                     except ValueError:
                         print ("Sorry that input wasn't valid! Please enter an integer greater than zero!")
                         continue
@@ -748,7 +771,8 @@ def Percolation():
                         break
                 while True:
                     try:
-                        q=float(raw_input("What value for the percolation probability (0<q<1)?"))
+                        #q=float(raw_input("What value for the percolation probability (0<q<1)?"))
+                        q = float(pre_q)
                     except ValueError:
                         print ("Sorry that input wasn't valid! Please enter a real number between zero and one!")
                         continue
@@ -759,7 +783,8 @@ def Percolation():
                         break
                 while True:
                     try:
-                        n=int(raw_input("How many columns do you want to initialize the matrix to (n)?"))
+                        #n=int(raw_input("How many columns do you want to initialize the matrix to (n)?"))
+                        n = int(pre_n)
                     except ValueError:
                         print ("Sorry that input wasn't valid! Please enter an integer greater than zero!")
                         continue
@@ -770,7 +795,8 @@ def Percolation():
                         break
                 while True:
                     try:
-                        r=int(raw_input("What search radius (r) would you like to use? "))
+                        #r=int(raw_input("What search radius (r) would you like to use? "))
+                        r = int(pre_r)
                     except ValueError:
                         print ("Sorry that input wasn't valid! Please enter an integer greater than zero!")
                         continue
@@ -781,7 +807,8 @@ def Percolation():
                         break
                 while True:
                     try:
-                        p=float(raw_input("What value for the probability that a state 1 site is a prize (p)?"))
+                        #p=float(raw_input("What value for the probability that a state 1 site is a prize (p)?"))
+                        p = float(pre_p)
                     except ValueError:
                         print ("Sorry that input wasn't valid! Please enter a real number between zero and one!")
                         continue
@@ -792,7 +819,8 @@ def Percolation():
                         break
                 while True:
                     try:
-                        Ru=float(raw_input("What is the mean of the values in the resistance matrix (Ru)?"))
+                        #Ru=float(raw_input("What is the mean of the values in the resistance matrix (Ru)?"))
+                        Ru = float(pre_Ru)
                     except ValueError:
                         print ("Sorry that input wasn't valid! Please enter a real number greater than zero!")
                         continue
@@ -803,7 +831,8 @@ def Percolation():
                         break
                 while True:
                     try:
-                        Ro=float(raw_input("What is the standard deviation of the values in the resistance matrix (Ro)?"))
+                        #Ro=float(raw_input("What is the standard deviation of the values in the resistance matrix (Ro)?"))
+                        Ro = float(pre_Ro)
                     except ValueError:
                         print ("Sorry that input wasn't valid! Please enter a real number greater than zero!")
                         continue
@@ -814,7 +843,8 @@ def Percolation():
                         break
                 while True:
                     try:
-                        pu=float(raw_input("What is the mean of the prize value (pu)?"))
+                        #pu=float(raw_input("What is the mean of the prize value (pu)?"))
+                        pu = float(pre_pu)
                     except ValueError:
                         print ("Sorry that input wasn't valid! Please enter a real number greater than zero!")
                         continue
@@ -825,7 +855,8 @@ def Percolation():
                         break
                 while True:
                     try:
-                        po=float(raw_input("What is the standard deviation of the prize value (po)?"))
+                        #po=float(raw_input("What is the standard deviation of the prize value (po)?"))
+                        po = float(pre_po)
                     except ValueError:
                         print ("Sorry that input wasn't valid! Please enter a real number greater than zero!")
                         continue
@@ -837,6 +868,7 @@ def Percolation():
                 while True:
                     try:
                         initial_b=float(raw_input("What is the starting budget (per column) for the company (initial_b)?"))
+                        initial_b = float(pre_initial_b)
                     except ValueError:
                         print ("Sorry that input wasn't valid! Please enter a real number greater than zero!")
                         continue
@@ -847,7 +879,8 @@ def Percolation():
                         break
                 while True:
                     try:
-                        b_percent=float(raw_input("What percentage of the remaining budget do you want given to R&D search each period (b_percent)?"))
+                        #b_percent=float(raw_input("What percentage of the remaining budget do you want given to R&D search each period (b_percent)?"))
+                        b_percent = float(pre_b_percent)
                     except ValueError:
                         print ("Sorry that input wasn't valid! Please enter a real number between zero and one!")
                         continue
@@ -859,6 +892,7 @@ def Percolation():
                 while True:
                     try:
                         E_min=float(raw_input("What is the minimum amount of budget that will be given to each lattice site every R&D period (E_min)?"))
+                        E_min = float(pre_E_min)
                     except ValueError:
                         print ("Sorry that input wasn't valid! Please enter a real number between zero and the inital budget ",initial_b,"!")
                         continue
@@ -870,6 +904,7 @@ def Percolation():
                 while True:
                     try:
                         t_max=int(raw_input("What is the maximum number of iterations (t_max) you want each run to conudct?"))
+                        t_max = int(pre_t_max)
                     except ValueError:
                         print ("Sorry that input wasn't valid! Please enter an integer greater than zero!")
                         continue

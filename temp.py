@@ -25,8 +25,8 @@ import outputfile as op #self built function module
 import os
 import random_generator as rg
 import input_data as inp #self built function
-
-
+import makegraph
+import sys
 """Changes from Thesis 2.0:
 
 1.) Addition of a line_plot function which allows the user to track how a metric changes over time during multiple simulation runs.
@@ -136,7 +136,7 @@ def BPF(S,BPF_old):
     return BPF_new #an array of the BPF values
 
 
-def Search_Index(m,n,BPF_x,BPF_y,r,L):
+def Search_Index(m,n,BPF_x,BPF_y,r,L,strategy):
     
     """
     This function gives the coordinate values of the diamond search.  It is called by the 'Search' function
@@ -147,16 +147,32 @@ def Search_Index(m,n,BPF_x,BPF_y,r,L):
     num_sites=0
     y_val=[]
     x_val=[]
-    for i in range(max(0,col-r),min(col+r+1,n)):
-        var=abs(abs(col-i)-r)
-        for a in range(-var,var+1):
-            if index+a>=0 and index+a<=m-1:
-                if index+a!=BPF_x or i!=BPF_y:
-                    if L[(index+a),i]==-1: #Key to the R&D search not searching sites that have already been discovered (i.e. not state -1)
-                        y_val.append(i)
+    if strategy == 'lr':
+        for i in range(max(0,col-r),min(col+r+1,n)):
+            if i != BPF_y:
+                if L[index,i]==-1:
+                    y_val.append(i)
+                    x_val.append(index)
+                    num_sites+=1
+    elif strategy == 'ud':
+        for a in range(-r,r+1):
+            if index+a >=0 and index+a<=m-1:
+                if index+a!=BPF_x:
+                    if L[(index+a),col] == -1:
+                        y_val.append(col)
                         x_val.append(index+a)
                         num_sites+=1
-                        
+    else:
+        for i in range(max(0,col-r),min(col+r+1,n)):
+            var=abs(abs(col-i)-r)
+            for a in range(-var,var+1):
+                if index+a>=0 and index+a<=m-1:
+                    if index+a!=BPF_x or i!=BPF_y:
+                        if L[(index+a),i]==-1: #Key to the R&D search not searching sites that have already been discovered (i.e. not state -1)
+                            y_val.append(i)
+                            x_val.append(index+a)
+                            num_sites+=1
+                            
     return x_val,y_val,num_sites
     
     
@@ -194,27 +210,25 @@ def twocheck(S,L,twos_i,twos_j,p_tup,p_win,win_col,j,strategy,step_num): #this f
     while count>0:
         i=twos_i[0] #value for the row
         j=twos_j[0] #value for the column (firm)
-        if strategy == 'all' or strategy == 'ud':
-            for x in range(max(0,i-1),min(m,i+2)): #searches up and down
-                if L[x,j]==1:
-                    S[x,j]=2
-                    L[x,j]=S[x,j]
-                    twos_i.append(x)
-                    twos_j.append(j)
-                    if (x,j) in p_tup and ((x,j) not in p_win):
-                        p_win.append((x,j))
-                        win_col.append(j)
-                                    
-        if strategy == 'all' or strategy == 'lr':             
-            for y in range(max(0,j-1),min(j+2,n)): #searches left and right
-                if L[i,y]==1:
-                    S[i,y]=2
-                    L[i,y]=S[i,y]
-                    twos_i.append(i)
-                    twos_j.append(y)  
-                    if (i,y) in p_tup and ((i,y) not in p_win):
-                        p_win.append((i,y))
-                        win_col.append(j)
+        for x in range(max(0,i-1),min(m,i+2)): #searches up and down
+            if L[x,j]==1:
+                S[x,j]=2
+                L[x,j]=S[x,j]
+                twos_i.append(x)
+                twos_j.append(j)
+                if (x,j) in p_tup and ((x,j) not in p_win):
+                    p_win.append((x,j))
+                    win_col.append(j)
+                                             
+        for y in range(max(0,j-1),min(j+2,n)): #searches left and right
+            if L[i,y]==1:
+                S[i,y]=2
+                L[i,y]=S[i,y]
+                twos_i.append(i)
+                twos_j.append(y)  
+                if (i,y) in p_tup and ((i,y) not in p_win):
+                    p_win.append((i,y))
+                    win_col.append(j)
                                     
         del twos_i[0]
         del twos_j[0]
@@ -222,7 +236,7 @@ def twocheck(S,L,twos_i,twos_j,p_tup,p_win,win_col,j,strategy,step_num): #this f
         
     return S,p_tup,p_win,win_col,step_num
     
-def Search(S,R,L,r,E,fold,p_tup,individual_bankrupt,strategy,concur,filename,step_num,check_height): #searches squares within a given radius r to do R&D on.  This R&D effort is given by E and if successful states are changed from 1 to 2
+def Search(S,R,L,r,E,fold,p_tup,individual_bankrupt,strategy,concur,filename,step_num,check_height,t): #searches squares within a given radius r to do R&D on.  This R&D effort is given by E and if successful states are changed from 1 to 2
     """
     This is the key function where R&D search is performed.  It takes the coordinates from the 'Search_Index' function and if num_sites
     is greater than zero it continues on to perform the RD function.  After the RD function any states changed from -1 to 1 go onto further
@@ -242,14 +256,14 @@ def Search(S,R,L,r,E,fold,p_tup,individual_bankrupt,strategy,concur,filename,ste
         if BPF_x>=0 and individual_bankrupt[j]==0: #ensures that there is a BPF point around with R&D can be conducted and the column has a budget
             op.writeBPF(BPF_y,False,filename)
             op.writeBPF(BPF_x,True,filename)
-            x_val,y_val,num_sites=Search_Index(m,n,BPF_x,BPF_y,r,L)
+            x_val,y_val,num_sites=Search_Index(m,n,BPF_x,BPF_y,r,L,strategy)
             if concur == True:
                 temp_sequence = sorted(rg.generate_sequence(j,n,5))
                 for ele in temp_sequence:
                     if fold[ele] >= 0:
                         op.writeBPF(ele,False,filename)
                         op.writeBPF(fold[ele],True,filename)
-                        x_temp_val,y_temp_val,temp_num_sites = Search_Index(m,n,fold[ele],ele,r,L)
+                        x_temp_val,y_temp_val,temp_num_sites = Search_Index(m,n,fold[ele],ele,r,L,strategy)
                         for elex in x_temp_val:
                             x_val.append(elex)
                         for eley in y_temp_val:
@@ -273,24 +287,22 @@ def Search(S,R,L,r,E,fold,p_tup,individual_bankrupt,strategy,concur,filename,ste
                     c=x_val[v]
                     d=y_val[v]
                     count=0
-                    if strategy == 'ud' or strategy == 'all':
-                        for x in range(max(0,c-1),min(m,c+2)): #searches up and down
-                            if S[x,d]==2:
-                                S[c,d]=2
-                                L[c,d]=S[c,d]
-                                if (c,d) in p_tup and ((c,d) not in p_win):
-                                    p_win.append((c,d))
-                                    win_col.append(j)
-                                count=1
-                    if strategy == 'lr' or strategy == 'all':
-                        for y in range(max(0,d-1),min(d+2,n)): #searches left and right
-                            if S[c,y]==2:
-                                S[c,d]=2
-                                L[c,d]=S[c,d]
-                                if (c,d) in p_tup and ((c,d) not in p_win):
-                                    p_win.append((c,d))
-                                    win_col.append(j)
-                                count=1
+                    for x in range(max(0,c-1),min(m,c+2)): #searches up and down
+                        if S[x,d]==2:
+                            S[c,d]=2
+                            L[c,d]=S[c,d]
+                            if (c,d) in p_tup and ((c,d) not in p_win):
+                                p_win.append((c,d))
+                                win_col.append(j)
+                            count=1
+                    for y in range(max(0,d-1),min(d+2,n)): #searches left and right
+                        if S[c,y]==2:
+                            S[c,d]=2
+                            L[c,d]=S[c,d]
+                            if (c,d) in p_tup and ((c,d) not in p_win):
+                                p_win.append((c,d))
+                                win_col.append(j)
+                            count=1
                     if count==1:
                         twos_i=[c]
                         twos_j=[d]
@@ -299,12 +311,25 @@ def Search(S,R,L,r,E,fold,p_tup,individual_bankrupt,strategy,concur,filename,ste
                         p_tup=Y[1]
                         p_win=Y[2]
                         win_col=Y[3]
-    with open ("step/L_"+filename+"_"+str(step_num)+".csv",'w') as openfile:
-        for i in range(L.shape[0]):
-            for j in range(L.shape[1]):
-                openfile.write(str(S[i][j])+' ')
+    if os.path.isfile("step/L_"+filename+"_"+".csv"):
+        with open ("step/L_"+filename+"_"+".csv",'a') as openfile:
             openfile.write('\n')
-    openfile.close()
+            openfile.write('\n')
+            openfile.write('\n')
+            openfile.write(str(t))
+            openfile.write('\n')
+            for i in range(L.shape[0]):
+                for j in range(L.shape[1]):
+                    openfile.write(str(S[i][j])+' ')
+                openfile.write('\n')
+        openfile.close()
+    else:
+        with open ("step/L_"+filename+"_"+".csv",'w') as openfile:
+            for i in range(L.shape[0]):
+                for j in range(L.shape[1]):
+                    openfile.write(str(S[i][j])+' ')
+                openfile.write('\n')
+        openfile.close()
 
     return p_win,win_col #array of tuples corresponding to the 'prizes' discovered during this round of Search and win_col is an array of the columns that were doing search when the prizes were found
     
@@ -405,13 +430,11 @@ def plot(X,Y,Z,names,val,one,two,zlabel):
     
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-
     X=np.array(X)
     Y=np.array(Y)
     Z=np.array(Z)
     l=np.linspace(min(Z),max(Z),6)
     bounds=np.floor(l)
-    
     cmap=mpl.colors.ListedColormap(['b','g','y','m','c'])    
     '''
     b: blue
@@ -486,7 +509,7 @@ def line_plot(X,Y,names,val,metric_num,val_metric,y_label):
     print (str(datetime.now()))
     plt.show()
     
-def Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,concur,shared,check_height):
+def Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,concur,shared,check_height,budget_x,budget_y):
     """
     This is the key function that allows the simulation to run. It runs at most t_max iterations of the Search function.  It updates all
     the matrices, BPF, budgets, etc. If ever the budget goes below zero the iteration stops and a 'Bankruptcy' is called.
@@ -539,8 +562,8 @@ def Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,
     count=0
     while t<t_max and t!=-1:
         
-        p_win,win_col=Search(S,R,L,r,E,Fold,p_tup,individual_bankrupt,strategy,concur,filename,t,check_height)
-       
+        p_win,win_col=Search(S,R,L,r,E,Fold,p_tup,individual_bankrupt,strategy,concur,filename,t,check_height,t)
+        
         Frontier=BPF(S,Fold)
         
         for j in range(n):
@@ -551,7 +574,8 @@ def Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,
         f2.write(str(individual_b)+'\n')
         f2.close()
         total_b=sum(individual_b)
-        
+        budget_x.append(t)
+        budget_y.append(total_b)
         for c in range(n):
             if individual_b[c]<0.0001:
                 individual_bankrupt[c]=1
@@ -600,7 +624,7 @@ def Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,
     p_win_old - Array of tuples showing all of the coordinates where prizes were found
     
     """
-    return L,T,B,B_percent,Bankrupt,t_Bankrupt,Frontier,p_win_old,max_BPF
+    return L,T,B,B_percent,Bankrupt,t_Bankrupt,Frontier,p_win_old,max_BPF,budget_x,budget_y,filename
     
     
 def runs(runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,concur,shared,check_height):
@@ -619,11 +643,19 @@ def runs(runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strateg
     p_win_old_array=[]
     
     B_percent_array=[]
-   
+    '''
+    holding the total budget left in the different time period: Yijun
+    '''
+    budget_x = []
+    budget_y = []
     x=0
     while x<runs:
-        L,T,B,B_percent,Bankrupt,t_Bankrupt,Frontier,p_win_old,max_BPF_array=Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,concur,shared,check_height)
-        
+        L,T,B,B_percent,Bankrupt,t_Bankrupt,Frontier,p_win_old,max_BPF_array,budget_x,budget_y,filename=Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,concur,shared,check_height,budget_x,budget_y)
+        '''
+        added by Yijun Dai. Making graph
+        '''
+        if runs == 1:
+            makegraph.makegraph(budget_x,budget_y,filename+"_money.png")
         max_BPF_val=max(Frontier)
         average_BPF_val=np.average(Frontier)
         
@@ -755,13 +787,16 @@ def Percolation():
     pre_t_max = 0
     try:
         with open ("input.txt",'r') as f:
-                try:
-                    for line in f:
-                        pre_run,pre_q,pre_n,pre_r,pre_p,pre_Ru,pre_Ro,pre_pu,pre_po,pre_initial_b,pre_b_percent,pre_E_min,pre_t_max=(ele.strip() for ele in line.split(" "))
-                except TypeError:
-                        print "Not enough number of parateters. Make sure that you seperate the parameters by one space. "
+                for line in f:
+                    if "#" not in line:
+                        try:
+                            pre_run,pre_q,pre_n,pre_r,pre_p,pre_Ru,pre_Ro,pre_pu,pre_po,pre_initial_b,pre_b_percent \
+                            ,pre_E_min,pre_t_max=(ele.strip() for ele in line.split(" "))
+                        except TypeError:
+                            print "Not enough number of parateters. Make sure that you seperate the parameters by one space. "
     except:
         print "no such an input file. please make a data file named 'input.txt', then store the necessary data inside and seperate the data by one space."
+        sys.exit("Early Finished due to error!")
     d=False
     while d==False:
         choice=str(raw_input("Would you like to perform multiple runs across multiple variables? (Y or N) "))
@@ -924,6 +959,7 @@ def Percolation():
                         continue
                     else:
                         break
+                print str(num_runs)+" "+str(q)
                 val = [num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max]
                 val1 = [num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max]
                 val2 = [num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max]
