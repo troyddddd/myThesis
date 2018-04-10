@@ -27,6 +27,7 @@ import random_generator as rg
 import input_data as inp #self built function
 import makegraph
 import sys
+from config import Config
 """Changes from Thesis 2.0:
 
 1.) Addition of a line_plot function which allows the user to track how a metric changes over time during multiple simulation runs.
@@ -49,11 +50,11 @@ L - Lattice (As Seen by the Company)
        
     """
 
-    S = inp.data_to_srl('source_S.csv')
-    R = inp.data_to_srl('source_R.csv')
-    L = inp.data_to_srl('source_L.csv')
-    BPF =inp.data_to_BPF('source_BPF.csv')
-    p_tup = inp.data_to_ptup('source_ptup.csv')
+    S = inp.data_to_srl('./source/source_S.csv')
+    R = inp.data_to_srl('./source/source_R.csv')
+    L = inp.data_to_srl('./source/source_L.csv')
+    BPF =inp.data_to_BPF('./source/source_BPF.csv')
+    p_tup = inp.data_to_ptup('./source/source_ptup.csv')
 
     """
     S - State Matrix
@@ -184,7 +185,7 @@ def RD(x_val,y_val,num_sites,E,S,R,L):
     If that S site is 1 then the coordinate is returned for further testing to see if it should become state 2.
     
     """
-    budget=float(E)/num_sites  #ASSUMPTION that the budget is equally distributed amongst all hidden sites in the diamond search
+    budget=float(E)/num_sites  # ASSUMPTION that the budget is equally distributed amongst all hidden sites in the diamond search
 
     one_index_x=[]
     one_index_y=[]   
@@ -199,7 +200,7 @@ def RD(x_val,y_val,num_sites,E,S,R,L):
                  
     return one_index_x,one_index_y  
     
-def twocheck(S,L,twos_i,twos_j,p_tup,p_win,win_col,j,strategy,step_num): #this function checks to see if states should be changed from 2-3
+def twocheck(S,L,twos_i,twos_j,p_tup,p_win,win_col,j,strategy): #this function checks to see if states should be changed from 2-3
     m=S.shape[0]
     n=S.shape[1]
     """ This function takes an i,j input of a lattice site that is known to be
@@ -234,9 +235,9 @@ def twocheck(S,L,twos_i,twos_j,p_tup,p_win,win_col,j,strategy,step_num): #this f
         del twos_j[0]
         count=len(twos_i) #keeps track of how many sites that are now 2 still need checking
         
-    return S,p_tup,p_win,win_col,step_num
+    return S,p_tup,p_win,win_col
     
-def Search(S,R,L,r,E,fold,p_tup,individual_bankrupt,strategy,concur,filename,step_num,check_height,t): #searches squares within a given radius r to do R&D on.  This R&D effort is given by E and if successful states are changed from 1 to 2
+def Search(S,R,L,r,E,fold,p_tup,individual_bankrupt,strategy,concur,step_num,check_height): #searches squares within a given radius r to do R&D on.  This R&D effort is given by E and if successful states are changed from 1 to 2
     """
     This is the key function where R&D search is performed.  It takes the coordinates from the 'Search_Index' function and if num_sites
     is greater than zero it continues on to perform the RD function.  After the RD function any states changed from -1 to 1 go onto further
@@ -254,15 +255,15 @@ def Search(S,R,L,r,E,fold,p_tup,individual_bankrupt,strategy,concur,filename,ste
         BPF_y=j
         BPF_x=fold[j]
         if BPF_x>=0 and individual_bankrupt[j]==0: #ensures that there is a BPF point around with R&D can be conducted and the column has a budget
-            op.writeBPF(BPF_y,False,filename)
-            op.writeBPF(BPF_x,True,filename)
+            # op.writeBPF(BPF_y,False,filename)
+            # op.writeBPF(BPF_x,True,filename)
             x_val,y_val,num_sites=Search_Index(m,n,BPF_x,BPF_y,r,L,strategy)
             if concur == True:
                 temp_sequence = sorted(rg.generate_sequence(j,n,5))
                 for ele in temp_sequence:
                     if fold[ele] >= 0:
-                        op.writeBPF(ele,False,filename)
-                        op.writeBPF(fold[ele],True,filename)
+                        # op.writeBPF(ele,False,filename)
+                        # op.writeBPF(fold[ele],True,filename)
                         x_temp_val,y_temp_val,temp_num_sites = Search_Index(m,n,fold[ele],ele,r,L,strategy)
                         for elex in x_temp_val:
                             x_val.append(elex)
@@ -278,7 +279,7 @@ def Search(S,R,L,r,E,fold,p_tup,individual_bankrupt,strategy,concur,filename,ste
                 for ele in temp_sequence:
                     candidate.append((ele,fold[ele]))
                 max_candidate = max(candidate, key=lambda item: item[0])
-                x_val,y_val,num_sites = Search_Index(m,n,max_candidate[1],max_candidate[0],r,L)
+                x_val,y_val,num_sites = Search_Index(m,n,max_candidate[1],max_candidate[0],r,L,strategy)
             if num_sites>0:
                 one_index=RD(x_val,y_val,num_sites,E[j],S,R,L)
                 x_val=one_index[0]
@@ -306,30 +307,30 @@ def Search(S,R,L,r,E,fold,p_tup,individual_bankrupt,strategy,concur,filename,ste
                     if count==1:
                         twos_i=[c]
                         twos_j=[d]
-                        Y=twocheck(S,L,twos_i,twos_j,p_tup,p_win,win_col,j,strategy,step_num)  #searches like a chain for further changes to state 2
+                        Y=twocheck(S,L,twos_i,twos_j,p_tup,p_win,win_col,j,strategy)  #searches like a chain for further changes to state 2
                         S=Y[0]
                         p_tup=Y[1]
                         p_win=Y[2]
                         win_col=Y[3]
-    if os.path.isfile("step/L_"+filename+"_"+".csv"):
-        with open ("step/L_"+filename+"_"+".csv",'a') as openfile:
-            openfile.write('\n')
-            openfile.write('\n')
-            openfile.write('\n')
-            openfile.write(str(t))
-            openfile.write('\n')
-            for i in range(L.shape[0]):
-                for j in range(L.shape[1]):
-                    openfile.write(str(S[i][j])+' ')
-                openfile.write('\n')
-        openfile.close()
-    else:
-        with open ("step/L_"+filename+"_"+".csv",'w') as openfile:
-            for i in range(L.shape[0]):
-                for j in range(L.shape[1]):
-                    openfile.write(str(S[i][j])+' ')
-                openfile.write('\n')
-        openfile.close()
+    # if os.path.isfile("step/L_"+filename+".csv"):
+    #     with open ("step/L_"+filename+".csv",'a') as openfile:
+    #         openfile.write('\n')
+    #         openfile.write('\n')
+    #         openfile.write('\n')
+    #         openfile.write(str(step_num))
+    #         openfile.write('\n')
+    #         for i in range(L.shape[0]):
+    #             for j in range(L.shape[1]):
+    #                 openfile.write(str(S[i][j])+' ')
+    #             openfile.write('\n')
+    #     openfile.close()
+    # else:
+    #     with open ("step/L_"+filename+".csv",'w') as openfile:
+    #         for i in range(L.shape[0]):
+    #             for j in range(L.shape[1]):
+    #                 openfile.write(str(S[i][j])+' ')
+    #             openfile.write('\n')
+    #     openfile.close()
 
     return p_win,win_col #array of tuples corresponding to the 'prizes' discovered during this round of Search and win_col is an array of the columns that were doing search when the prizes were found
     
@@ -359,7 +360,7 @@ def win(individual_budget,p_win_old,p_win,pu,po,p_tup,win_col,choice):
         
     return individual_budget,p_win_old, p_tup  
     
-def lattice(L,names,val,p_win_old,con_distance,strategy):
+def lattice(L,names,val,p_win_old,con_distance,strategy,shared,check_height):
     """
     This plots the Lattice grid.
     
@@ -367,6 +368,7 @@ def lattice(L,names,val,p_win_old,con_distance,strategy):
     fig=plt.figure("Lattice")
     
     prize_array=p_win_old[0]
+    print 'prize array: ', prize_array
     ax=plt.subplot(111)
     S_new=copy.deepcopy(L)
     
@@ -407,17 +409,17 @@ def lattice(L,names,val,p_win_old,con_distance,strategy):
                  box.width, box.height * 0.9])
 
     # Put a legend below current axis
-    plt.legend(handles=[yellow_patch,blue_patch,green_patch,gray_patch,white_patch],loc='upper center', bbox_to_anchor=(0.5,-.01))
-    txt=''
-    for i in range(1,len(names)):
-                    txt+=names[i]+' = '+str(val[i])
-                    if i!=len(names)-1:
-                        txt+='\n'
+    # plt.legend(handles=[yellow_patch,blue_patch,green_patch,gray_patch,white_patch],loc='upper center', bbox_to_anchor=(0.5,-.01))
+    # txt=''
+    # for i in range(1,len(names)):
+    #                 txt+=names[i]+' = '+str(val[i])
+    #                 if i!=len(names)-1:
+    #                     txt+='\n'
                      
-    fig.text(.01,.5,txt,bbox=dict(facecolor='white', ec='black', alpha=1.0),fontsize=15) #This gives the parameters of the run conducted
+    # fig.text(.01,.5,txt,bbox=dict(facecolor='white', ec='black', alpha=1.0),fontsize=15) #This gives the parameters of the run conducted
     plt.pcolormesh(y,x,np.array(X),cmap=cmap,norm=norm,edgecolor='k')
     temps= ""
-    temps = temps + "Distance: " + str(con_distance) + "Direction: " + str(strategy)
+    temps = temps + "Distance: " + str(con_distance) + " Direction: " + str(strategy) + " Shared: " + str(shared) + " Height: " + str(check_height) 
     plt.title(temps)
     #plt.draw()
     plt.show()
@@ -516,31 +518,33 @@ def Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,
     """
     
     S,Fold,p_tup,R,L=Initialize(q,n,r,p,Ru,Ro,choice)
-    filename = 'result_' + strategy + "_Concurrence: "+str(concur)
-    f=open(filename,'w')
-    f.write('S matrix: '+'\n')
-    f.close()
-    op.writeOriginalmatrix(S,'a',filename)
-    f=open(filename,'a')
-    f.write('R matrix: '+'\n')
-    f.close()
-    op.writeOriginalmatrix(R,'a',filename)
-    f=open(filename,'a')
-    f.write('L matrix: '+'\n')
-    f.close()
-    op.writeOriginalmatrix(L,'a',filename)
+    # filename = 'result_' + strategy + "_Concurrence: "+str(concur)
+    # f=open(filename,'w')
+    # f.write('S matrix: '+'\n')
+    # f.close()
+    # op.writeOriginalmatrix(S,'a',filename)
+    # f=open(filename,'a')
+    # f.write('R matrix: '+'\n')
+    # f.close()
+    # op.writeOriginalmatrix(R,'a',filename)
+    # f=open(filename,'a')
+    # f.write('L matrix: '+'\n')
+    # f.close()
+    # op.writeOriginalmatrix(L,'a',filename)
 
     p_win_old=[]
-  
     individual_b=[initial_b]*n #difference from thesis 3.0 ...  each column now has a budget separate from the other columns
     total_b=float(initial_b)*n  #key change from thesis 3.0
-    filename1 = 'IndividualBudget_' + strategy + "_Concurrence: "+str(concur)
-    f2 = open(filename1,'w')
-    f2.write(str(individual_b)+'\n')
-    f2.close()
-    total_initial_b=total_b
-   
+    # filename1 = 'TotallBudget_' + strategy + "_Concurrence: "+str(concur)
     
+    total_initial_b=total_b
+    # f2 = open(filename1,'w')
+    # f2.write('Total Budege every time step')
+    # f2.write('with respect to strategy %s, concurrence %s'%(strategy,str(concur)))
+    # f2.write('shared budget %s, check height %s'%(str(shared),str(check_height)))
+    # f2.write('time %s: %s'%('-1',str(total_b))+'\n')
+    budget_x.append('-1')
+    budget_y.append(total_b)
     E=[initial_b*b_percent]*n
     for i in range(n):
         if E[i]<E_min and individual_b[i]>=E_min:
@@ -560,20 +564,18 @@ def Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,
     max_BPF=[0]
     B_percent.append(1)
     count=0
+
     while t<t_max and t!=-1:
         
-        p_win,win_col=Search(S,R,L,r,E,Fold,p_tup,individual_bankrupt,strategy,concur,filename,t,check_height,t)
+        p_win,win_col=Search(S,R,L,r,E,Fold,p_tup,individual_bankrupt,strategy,concur,t,check_height)
         
         Frontier=BPF(S,Fold)
         
         for j in range(n):
             individual_b[j]=individual_b[j]-E[j]
         individual_b,p_win_old,p_tup=win(individual_b,p_win_old,p_win,pu,po,p_tup,win_col,choice)
-        filename1 = 'IndividualBudget_' + strategy + "_Concurrence: "+str(concur)
-        f2 = open(filename1,'a')
-        f2.write(str(individual_b)+'\n')
-        f2.close()
         total_b=sum(individual_b)
+        # f2.write('time %s: %s'%(str(t),str(total_b)))
         budget_x.append(t)
         budget_y.append(total_b)
         for c in range(n):
@@ -594,8 +596,8 @@ def Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,
             sum the total available budget from the previous iteration
             and put it into the differernt evenly.
             '''
-            individual_amount = total_b/len(individial_b)
-            for i in range(len(individial_b)):
+            individual_amount = total_b/len(individual_b)
+            for i in range(len(individual_b)):
                 individual_b[i] = individual_amount
         for a in range(n):
             E[a]=individual_b[a]*b_percent
@@ -609,7 +611,10 @@ def Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,
         T.append(t)
         B_percent.append(total_b/total_initial_b)
         max_BPF.append(max(Fold))
-        
+
+
+    # f2.close()
+    #print 'strategy: ',strategy,' concurrence: ', concur,p_win_old 
     if t==-1:
             T[-1]=t_Bankrupt
             
@@ -624,7 +629,7 @@ def Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,
     p_win_old - Array of tuples showing all of the coordinates where prizes were found
     
     """
-    return L,T,B,B_percent,Bankrupt,t_Bankrupt,Frontier,p_win_old,max_BPF,budget_x,budget_y,filename
+    return L,T,B,B_percent,Bankrupt,t_Bankrupt,Frontier,p_win_old,max_BPF,budget_x,budget_y
     
     
 def runs(runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,concur,shared,check_height):
@@ -649,13 +654,17 @@ def runs(runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strateg
     budget_x = []
     budget_y = []
     x=0
+    filename = 'Strategy: %s, Concur: %s, Shared: %s, check_height: %s' %(strategy,str(concur), str(shared), str(check_height))
+    if concur == False and check_height == True:
+        raise Exception('Only check for the highest BPF can only process with Concurrent search')
+        sys.exit()
     while x<runs:
-        L,T,B,B_percent,Bankrupt,t_Bankrupt,Frontier,p_win_old,max_BPF_array,budget_x,budget_y,filename=Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,concur,shared,check_height,budget_x,budget_y)
+        L,T,B,B_percent,Bankrupt,t_Bankrupt,Frontier,p_win_old,max_BPF_array,budget_x,budget_y=Iterate(q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,choice,strategy,concur,shared,check_height,budget_x,budget_y)
         '''
         added by Yijun Dai. Making graph
         '''
         if runs == 1:
-            makegraph.makegraph(budget_x,budget_y,filename+"_money.png")
+            makegraph.makegraph(budget_x,budget_y,filename+".png")
         max_BPF_val=max(Frontier)
         average_BPF_val=np.average(Frontier)
         
@@ -785,18 +794,32 @@ def Percolation():
     pre_b_percent = 0.0
     pre_E_min = 0.0
     pre_t_max = 0
-    try:
-        with open ("input.txt",'r') as f:
-                for line in f:
-                    if "#" not in line:
-                        try:
-                            pre_run,pre_q,pre_n,pre_r,pre_p,pre_Ru,pre_Ro,pre_pu,pre_po,pre_initial_b,pre_b_percent \
-                            ,pre_E_min,pre_t_max=(ele.strip() for ele in line.split(" "))
-                        except TypeError:
-                            print "Not enough number of parateters. Make sure that you seperate the parameters by one space. "
-    except:
-        print "no such an input file. please make a data file named 'input.txt', then store the necessary data inside and seperate the data by one space."
-        sys.exit("Early Finished due to error!")
+    Conf = Config()
+    # try:
+    #     with open ("input.txt",'r') as f:
+    #             for line in f:
+    #                 if "#" not in line:
+    #                     try:
+    #                         pre_run,pre_q,pre_n,pre_r,pre_p,pre_Ru,pre_Ro,pre_pu,pre_po,pre_initial_b,pre_b_percent \
+    #                         ,pre_E_min,pre_t_max=(ele.strip() for ele in line.split(" "))
+    #                     except TypeError:
+    #                         print "Not enough number of parateters. Make sure that you seperate the parameters by one space. "
+    # except:
+    #     print "no such an input file. please make a data file named 'input.txt', then store the necessary data inside and seperate the data by one space."
+    #     sys.exit("Early Finished due to error!")
+    pre_run = Conf.num_run
+    pre_q = Conf.q_val
+    pre_n = Conf.num_col
+    pre_r = Conf.search_radius
+    pre_p = Conf.p_val
+    pre_Ru = Conf.ru_val
+    pre_Ro = Conf.ro_val
+    pre_pu = Conf.pu_val
+    pre_po = Conf.po_val
+    pre_initial_b = Conf.initial_b
+    pre_b_percent = Conf.b_percent
+    pre_E_min = Conf.e_min
+    pre_t_max = Conf.t_max
     d=False
     while d==False:
         choice=str(raw_input("Would you like to perform multiple runs across multiple variables? (Y or N) "))
@@ -967,15 +990,22 @@ def Percolation():
                 Z1 = runs(num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,prob_choice,'ud',False,False,False)
                 Z2 = runs(num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,prob_choice,'lr',False,False,False)
                 Z3 = runs(num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,prob_choice,'all',True,False,False)
+                Z4 = runs(num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,prob_choice,'all',True,True,False)
+                Z5 = runs(num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,prob_choice,'all',True,True,True)
+                Z6 = runs(num_runs,q,n,r,p,Ru,Ro,pu,po,initial_b,b_percent,E_min,t_max,prob_choice,'all',False,True,False)
                 if num_runs==1:
                     o=False
                     while o==False:
                         lat_choice=raw_input("Would you like to display a graph of the final lattice structure? (Y or N)")
                         if lat_choice.lower()=='y' or lat_choice.lower()=='yes':
-                            lattice(Z[0],names,val,Z[8],0,'all')
-                            lattice(Z1[0],names,val,Z1[8],0,'up-down')
-                            lattice(Z2[0],names,val,Z2[8],0,'left-right')
-                            lattice(Z3[0],names,val,Z3[8],20,'all')
+                            print 'p_win_old_type: ', type(Z[8][0])
+                            lattice(Z[0],names,val,Z[8],0,'all',False,False)
+                            lattice(Z1[0],names,val,Z1[8],0,'up-down',False,False)
+                            lattice(Z2[0],names,val,Z2[8],0,'left-right',False,False)
+                            lattice(Z3[0],names,val,Z3[8],5,'all',False,False)
+                            lattice(Z4[0],names,val,Z4[8],5,'all',True,False)
+                            lattice(Z5[0],names,val,Z5[8],5,'all',True,True)
+                            lattice(Z6[0],names,val,Z6[8],0,'all',True,False)
                             o=True
                         elif lat_choice.lower()=='no' or lat_choice.lower()=='n':
                             o=True
@@ -985,15 +1015,15 @@ def Percolation():
                 print "Max_BPF_Average all direction = ",Z[1]
                 print "Max_BPF_Average up and down = ", Z1[1]
                 print "Max_BPF_Average left and right = ", Z2[1]
-                print "Max_BPF_Average all direction and 20: ",Z3[1]
+                print "Max_BPF_Average all direction and 5: ",Z3[1]
                 print "Average Percent of Initial Budget Remaining all direction = ",Z[4]*100
                 print "Average Percent of Initial Budget Remaining up and down = ",Z1[4]*100
                 print "Average Percent of Initial Budget Remaining left and right = ",Z2[4]*100
-                print "Average Percent of Initial Budget Remaining all direction and 20 = ",Z3[4]*100
+                print "Average Percent of Initial Budget Remaining all direction and 5 = ",Z3[4]*100
                 print "All Direction: Number of Times Gone Bankrupt = ",Z[5], " This means there was a ",Z[6],"% Bankruptcy rate!"
                 print "Up and down: Number of Times Gone Bankrupt = ",Z1[5], " This means there was a ",Z1[6],"% Bankruptcy rate!"
                 print "Left and right: Number of Times Gone Bankrupt = ",Z2[5], " This means there was a ",Z2[6],"% Bankruptcy rate!"
-                print "All direction 20: Number of Times Gone Bankrupt =",Z3[5]," This means there was a ",Z3[6],"% Bankruptcy rate!"
+                print "All direction 5: Number of Times Gone Bankrupt =",Z3[5]," This means there was a ",Z3[6],"% Bankruptcy rate!"
                 d=True
         elif choice.lower()=='y' or choice.lower=='yes':
             s=False
