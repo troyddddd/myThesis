@@ -31,6 +31,7 @@ class DataFile():
 
 		S = np.zeros((self.search_radius+1, self.col_num))
 		R = np.ones((self.search_radius+1, self.col_num))
+		print R
 		L = np.ones((self.search_radius+1, self.col_num))*-1
 		BPF = np.ones(self.col_num)*-1
 		BPF = BPF.astype(int)
@@ -40,13 +41,13 @@ class DataFile():
 			for i in range(self.search_radius+1):
 				for j in range(self.col_num):
 					rand = np.random.uniform(0,1)
-                	Rrand = np.random.lognormal(self.ru_val,self.ro_val)
-                	R[i,j] = Rrand
-	                if rand <= self.q_val:
-	                	S[i,j] = 1
-	                	if np.random.uniform(0, 1) <= self.p_val and i != 0:
-	                		p_tup.append((i,j))
-	        for x in range(0,self.col_num):		#Changes half of the State 1 squares to State 2 in the bottom row
+					Rrand = np.random.lognormal(self.ru_val,self.ro_val)
+					R[i,j] = Rrand
+					if rand <= self.q_val:
+						S[i,j] = 1
+						if np.random.uniform(0, 1) <= self.p_val and i != 0:
+							p_tup.append((i,j))
+			for x in range(0,self.col_num):		#Changes half of the State 1 squares to State 2 in the bottom row
 				if S[0,x]==1:
 					seed=np.random.uniform(0, 1)
 					if seed <= 0.5:
@@ -54,11 +55,11 @@ class DataFile():
 						L[0,x]=S[0,x]
 						count+=1
 						BPF[x]=0
-	        if count == 0:
-	        	random = np.random.randint(0,self.col_num)
-	        	S[0,random] = 2
-	        	L[0,random] = S[0,random]
-	        	BPF[random] = 0
+			if count == 0:
+				random = np.random.randint(0,self.col_num)
+				S[0,random] = 2
+				L[0,random] = S[0,random]
+				BPF[random] = 0
 		if self.choice == 1:
 			for i in range(self.search_radius+1):
 				for j in range(self.col_num):

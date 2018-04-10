@@ -10,7 +10,7 @@ class Config:
 	ro_val = 1
 	pu_val = 8
 	po_val = 1
-	initial_b = 100
+	initial_b = 1000
 	b_percent = 0.005
 	e_min = 2
 	t_max = 100

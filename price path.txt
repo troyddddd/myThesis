@@ -1,0 +1,248 @@
+
+price path summary:
+
+'strategy: all,concurrence: True': [(3, 2), (3, 8), (3, 9), (4, 9), (3, 7), (3, 6), (4, 8), (3, 4), (5, 9), (6, 9), (6, 8), (5, 8), (3, 0), (6, 7), (5, 6), (5, 3), (8, 8), (5, 5), (6, 6), (8, 9), (6, 4), (8, 7), (9, 8), (10, 8), (9, 9), (10, 9), (9, 7), (6, 3), (6, 2), (7, 3), (4, 5), (11, 9), (9, 6), (10, 6), (11, 7), (6, 1), (7, 1), (6, 0), (7, 2), (8, 5), (4, 1), (13, 9), (14, 9), (13, 8), (11, 5), (12, 6), (12, 7), (10, 5), (10, 4), (12, 8), (7, 0), (8, 1), (8, 3), (9, 3), (5, 1), (13, 6), (14, 8), (15, 9), (10, 3), (12, 5), (14, 6), (11, 3), (13, 5), (10, 1), (11, 2), (12, 3), (15, 6), (15, 5), (16, 7), (16, 8), (12, 1), (14, 5), (14, 4), (13, 4), (16, 6), (13, 3), (13, 2), (17, 7), (16, 5), (16, 4), (18, 6), (14, 2), (18, 8), (15, 4), (17, 5), (15, 2), (17, 6), (14, 1), (14, 3), (13, 1), (16, 3), (17, 3), (17, 4), (18, 4), (19, 7), (19, 5), (20, 8), (15, 1), (16, 1), (17, 2), (20, 6), (18, 2), (19, 4), (20, 4), (19, 3), (20, 9), (19, 9), (21, 7), (22, 7), (21, 8), (21, 5), (17, 1), (18, 3), (22, 6), (22, 8), (21, 9), (18, 1), (19, 2), (23, 7), (24, 8), (23, 9), (20, 2), (21, 2), (24, 7), (23, 5), (22, 4), (24, 6), (18, 0), (22, 3), (23, 3), (24, 4), (25, 7), (26, 7), (24, 9), (25, 6), (25, 8), (25, 9), (22, 2), (23, 2), (22, 1), (23, 4), (26, 8), (21, 1), (26, 6), (20, 0), (26, 5), (26, 9), (28, 7), (26, 4), (27, 8), (28, 8), (27, 9), (24, 2), (24, 3), (25, 3), (27, 6), (25, 4), (27, 5), (22, 0), (28, 5), (29, 5), (28, 6), (23, 1), (29, 7), (29, 8), (30, 8), (29, 9), (23, 0), (25, 2), (25, 1), (28, 4), (27, 3), (31, 9), (29, 4), (30, 6), (28, 3), (28, 2), (31, 7), (30, 5)] 
+
+'strategy: lr,concurrence: False': [] 
+
+'strategy: ud,concurrence: False': [(4, 3), (5, 3), (6, 3), (7, 3), (9, 3), (10, 3), (11, 3), (12, 3)] 
+
+'strategy: all,concurrence: False': [(3, 2), (3, 3), (3, 4), (4, 2), (5, 3), (4, 4), (3, 9), (4, 8), (5, 5), (3, 5), (6, 9), (6, 3), (6, 2), (4, 5), (6, 5), (6, 6), (7, 5), (5, 1), (7, 4), (6, 8), (8, 5), (8, 6), (6, 7), (5, 7), (7, 7), (7, 8), (8, 8), (8, 9), (6, 0), (3, 6), (7, 3), (9, 5), (8, 7), (9, 7), (9, 8), (9, 4), (7, 0), (8, 0), (10, 5), (10, 6), (11, 6), (11, 7), (10, 9), (8, 1), (10, 3), (9, 2), (11, 9), (10, 4), (11, 4), (11, 5), (12, 8), (12, 9), (13, 8), (10, 0), (12, 4), (12, 3), (12, 5), (10, 2), (11, 2), (13, 5), (12, 6), (13, 7), (13, 6), (11, 0), (14, 7), (14, 8), (15, 8), (12, 2), (13, 2), (12, 1), (14, 6), (15, 7), (12, 0), (14, 5), (15, 5), (14, 3), (15, 6), (13, 0), (13, 1), (16, 7), (17, 8), (16, 9), (15, 9), (15, 3), (15, 4), (16, 4), (14, 0), (16, 5), (17, 5), (17, 7), (16, 3), (17, 6), (17, 4), (18, 4), (18, 5), (18, 7), (17, 9), (16, 1), (18, 3), (15, 0), (16, 0), (19, 5), (19, 6), (18, 8), (19, 8), (19, 7)]
+
+win site along the timeline, and the resource allocation:
+time0:
+strategy: all,concurrence: False []
+strategy: ud,concurrence: False []
+strategy: lr,concurrence: False []
+strategy: all,concurrence: True []
+{'strategy: all,concurrence: True': 0.25, 'strategy: lr,concurrence: False': 0.25, 'strategy: ud,concurrence: False': 0.25, 'strategy: all,concurrence: False': 0.25}
+
+time1:
+strategy: all,concurrence: False []
+strategy: ud,concurrence: False []
+strategy: lr,concurrence: False []
+strategy: all,concurrence: True []
+{'strategy: all,concurrence: True': 0.25, 'strategy: lr,concurrence: False': 0.25, 'strategy: ud,concurrence: False': 0.25, 'strategy: all,concurrence: False': 0.25}
+
+time2:
+strategy: all,concurrence: False []
+strategy: ud,concurrence: False []
+strategy: lr,concurrence: False []
+strategy: all,concurrence: True []
+{'strategy: all,concurrence: True': 0.25, 'strategy: lr,concurrence: False': 0.25, 'strategy: ud,concurrence: False': 0.25, 'strategy: all,concurrence: False': 0.25}
+
+time3:
+strategy: all,concurrence: False []
+strategy: ud,concurrence: False []
+strategy: lr,concurrence: False []
+strategy: all,concurrence: True []
+{'strategy: all,concurrence: True': 0.25, 'strategy: lr,concurrence: False': 0.25, 'strategy: ud,concurrence: False': 0.25, 'strategy: all,concurrence: False': 0.25}
+
+time4:
+strategy: all,concurrence: False []
+strategy: ud,concurrence: False []
+strategy: lr,concurrence: False []
+strategy: all,concurrence: True []
+{'strategy: all,concurrence: True': 0.25, 'strategy: lr,concurrence: False': 0.25, 'strategy: ud,concurrence: False': 0.25, 'strategy: all,concurrence: False': 0.25}
+
+time5:
+strategy: all,concurrence: False []
+strategy: ud,concurrence: False []
+strategy: lr,concurrence: False []
+strategy: all,concurrence: True []
+{'strategy: all,concurrence: True': 0.25, 'strategy: lr,concurrence: False': 0.25, 'strategy: ud,concurrence: False': 0.25, 'strategy: all,concurrence: False': 0.25}
+
+time6:
+strategy: all,concurrence: False []
+strategy: ud,concurrence: False []
+strategy: lr,concurrence: False []
+strategy: all,concurrence: True []
+{'strategy: all,concurrence: True': 0.25, 'strategy: lr,concurrence: False': 0.25, 'strategy: ud,concurrence: False': 0.25, 'strategy: all,concurrence: False': 0.25}
+
+time7:
+strategy: all,concurrence: False []
+strategy: ud,concurrence: False []
+strategy: lr,concurrence: False []
+strategy: all,concurrence: True []
+{'strategy: all,concurrence: True': 0.25, 'strategy: lr,concurrence: False': 0.25, 'strategy: ud,concurrence: False': 0.25, 'strategy: all,concurrence: False': 0.25}
+
+time8:
+strategy: all,concurrence: False []
+strategy: ud,concurrence: False []
+strategy: lr,concurrence: False []
+strategy: all,concurrence: True []
+{'strategy: all,concurrence: True': 0.25, 'strategy: lr,concurrence: False': 0.25, 'strategy: ud,concurrence: False': 0.25, 'strategy: all,concurrence: False': 0.25}
+
+time9:
+strategy: all,concurrence: False []
+strategy: ud,concurrence: False []
+strategy: lr,concurrence: False []
+strategy: all,concurrence: True []
+{'strategy: all,concurrence: True': 0.25, 'strategy: lr,concurrence: False': 0.25, 'strategy: ud,concurrence: False': 0.25, 'strategy: all,concurrence: False': 0.25}
+
+time10:
+strategy: all,concurrence: False []
+strategy: ud,concurrence: False []
+strategy: lr,concurrence: False []
+strategy: all,concurrence: True []
+{'strategy: all,concurrence: True': 0.25, 'strategy: lr,concurrence: False': 0.25, 'strategy: ud,concurrence: False': 0.25, 'strategy: all,concurrence: False': 0.25}
+
+time11:
+strategy: all,concurrence: False []
+strategy: ud,concurrence: False []
+strategy: lr,concurrence: False []
+strategy: all,concurrence: True []
+{'strategy: all,concurrence: True': 0.25, 'strategy: lr,concurrence: False': 0.25, 'strategy: ud,concurrence: False': 0.25, 'strategy: all,concurrence: False': 0.25}
+
+time12:
+strategy: all,concurrence: False []
+strategy: ud,concurrence: False []
+strategy: lr,concurrence: False []
+strategy: all,concurrence: True []
+{'strategy: all,concurrence: True': 0.25, 'strategy: lr,concurrence: False': 0.25, 'strategy: ud,concurrence: False': 0.25, 'strategy: all,concurrence: False': 0.25}
+
+time13:
+strategy: all,concurrence: False []
+strategy: ud,concurrence: False []
+strategy: lr,concurrence: False []
+strategy: all,concurrence: True [(3, 2)]
+{'strategy: all,concurrence: True': 0.7, 'strategy: lr,concurrence: False': 0.1, 'strategy: ud,concurrence: False': 0.1, 'strategy: all,concurrence: False': 0.1}
+
+time14:
+strategy: all,concurrence: False [(3, 2), (3, 3)]
+strategy: ud,concurrence: False []
+strategy: lr,concurrence: False []
+strategy: all,concurrence: True [(3, 8)]
+{'strategy: all,concurrence: True': 0.7, 'strategy: lr,concurrence: False': 0.1, 'strategy: ud,concurrence: False': 0.1, 'strategy: all,concurrence: False': 0.1}
+
+time15:
+strategy: all,concurrence: False [(3, 4)]
+strategy: ud,concurrence: False []
+strategy: lr,concurrence: False []
+strategy: all,concurrence: True [(3, 9), (4, 9)]
+{'strategy: all,concurrence: True': 0.7, 'strategy: lr,concurrence: False': 0.1, 'strategy: ud,concurrence: False': 0.1, 'strategy: all,concurrence: False': 0.1}
+
+time16:
+strategy: all,concurrence: False [(4, 2), (5, 3)]
+strategy: ud,concurrence: False []
+strategy: lr,concurrence: False []
+strategy: all,concurrence: True [(3, 7), (3, 6), (4, 8)]
+{'strategy: all,concurrence: True': 0.7, 'strategy: lr,concurrence: False': 0.1, 'strategy: ud,concurrence: False': 0.1, 'strategy: all,concurrence: False': 0.1}
+
+time17:
+strategy: all,concurrence: False []
+strategy: ud,concurrence: False [(4, 3), (5, 3)]
+strategy: lr,concurrence: False []
+strategy: all,concurrence: True [(3, 4), (5, 9), (6, 9), (6, 8), (5, 8), (3, 0)]
+{'strategy: all,concurrence: True': 0.7, 'strategy: lr,concurrence: False': 0.1, 'strategy: ud,concurrence: False': 0.1, 'strategy: all,concurrence: False': 0.1}
+
+time18:
+strategy: all,concurrence: False []
+strategy: ud,concurrence: False [(6, 3), (7, 3)]
+strategy: lr,concurrence: False []
+strategy: all,concurrence: True [(6, 7), (5, 6), (5, 3), (8, 8), (5, 5), (6, 6), (8, 9)]
+{'strategy: all,concurrence: True': 0.7, 'strategy: lr,concurrence: False': 0.1, 'strategy: ud,concurrence: False': 0.1, 'strategy: all,concurrence: False': 0.1}
+
+time19:
+strategy: all,concurrence: False []
+strategy: ud,concurrence: False [(9, 3)]
+strategy: lr,concurrence: False []
+strategy: all,concurrence: True [(6, 4), (8, 7), (9, 8), (10, 8), (9, 9), (10, 9), (9, 7), (6, 3), (6, 2), (7, 3), (4, 5)]
+{'strategy: all,concurrence: True': 0.7, 'strategy: lr,concurrence: False': 0.1, 'strategy: ud,concurrence: False': 0.1, 'strategy: all,concurrence: False': 0.1}
+
+time20:
+strategy: all,concurrence: False [(4, 4), (3, 9)]
+strategy: ud,concurrence: False [(10, 3), (11, 3)]
+strategy: lr,concurrence: False []
+strategy: all,concurrence: True [(11, 9), (9, 6), (10, 6), (11, 7), (6, 1), (7, 1), (6, 0), (7, 2), (8, 5), (4, 1)]
+{'strategy: all,concurrence: True': 0.7, 'strategy: lr,concurrence: False': 0.1, 'strategy: ud,concurrence: False': 0.1, 'strategy: all,concurrence: False': 0.1}
+
+time21:
+strategy: all,concurrence: False [(4, 8)]
+strategy: ud,concurrence: False [(12, 3)]
+strategy: lr,concurrence: False []
+strategy: all,concurrence: True [(13, 9), (14, 9), (13, 8), (11, 5), (12, 6), (12, 7), (10, 5), (10, 4), (12, 8), (7, 0), (8, 1), (8, 3), (9, 3), (5, 1)]
+{'strategy: all,concurrence: True': 0.7, 'strategy: lr,concurrence: False': 0.1, 'strategy: ud,concurrence: False': 0.1, 'strategy: all,concurrence: False': 0.1}
+
+time22:
+strategy: all,concurrence: False [(5, 5)]
+strategy: ud,concurrence: False []
+strategy: lr,concurrence: False []
+strategy: all,concurrence: True [(13, 6), (14, 8), (15, 9), (10, 3), (12, 5), (14, 6), (11, 3), (13, 5), (10, 1), (11, 2)]
+{'strategy: all,concurrence: True': 0.7, 'strategy: lr,concurrence: False': 0.1, 'strategy: ud,concurrence: False': 0.1, 'strategy: all,concurrence: False': 0.1}
+
+time23:
+strategy: all,concurrence: False [(3, 5)]
+strategy: ud,concurrence: False []
+strategy: lr,concurrence: False []
+strategy: all,concurrence: True [(12, 3), (15, 6), (15, 5), (16, 7), (16, 8), (12, 1), (14, 5), (14, 4), (13, 4), (16, 6), (13, 3), (13, 2)]
+{'strategy: all,concurrence: True': 0.7, 'strategy: lr,concurrence: False': 0.1, 'strategy: ud,concurrence: False': 0.1, 'strategy: all,concurrence: False': 0.1}
+
+time24:
+strategy: all,concurrence: False [(6, 9), (6, 3), (6, 2)]
+strategy: ud,concurrence: False []
+strategy: lr,concurrence: False []
+strategy: all,concurrence: True [(17, 7), (16, 5), (16, 4), (18, 6), (14, 2), (18, 8), (15, 4), (17, 5), (15, 2), (17, 6), (14, 1), (14, 3), (13, 1)]
+{'strategy: all,concurrence: True': 0.7, 'strategy: lr,concurrence: False': 0.1, 'strategy: ud,concurrence: False': 0.1, 'strategy: all,concurrence: False': 0.1}
+
+time25:
+strategy: all,concurrence: False [(4, 5), (6, 5), (6, 6), (7, 5)]
+strategy: ud,concurrence: False []
+strategy: lr,concurrence: False []
+strategy: all,concurrence: True [(16, 3), (17, 3), (17, 4), (18, 4), (19, 7), (19, 5), (20, 8), (15, 1), (16, 1), (17, 2), (20, 6)]
+{'strategy: all,concurrence: True': 0.7, 'strategy: lr,concurrence: False': 0.1, 'strategy: ud,concurrence: False': 0.1, 'strategy: all,concurrence: False': 0.1}
+
+time26:
+strategy: all,concurrence: False [(5, 1), (7, 4), (6, 8), (8, 5)]
+strategy: ud,concurrence: False []
+strategy: lr,concurrence: False []
+strategy: all,concurrence: True [(18, 2), (19, 4), (20, 4), (19, 3), (20, 9), (19, 9), (21, 7), (22, 7), (21, 8), (21, 5), (17, 1), (18, 3), (22, 6), (22, 8), (21, 9), (18, 1), (19, 2)]
+{'strategy: all,concurrence: True': 0.7, 'strategy: lr,concurrence: False': 0.1, 'strategy: ud,concurrence: False': 0.1, 'strategy: all,concurrence: False': 0.1}
+
+time27:
+strategy: all,concurrence: False [(8, 6), (6, 7), (5, 7), (7, 7), (7, 8), (8, 8), (8, 9), (6, 0), (3, 6), (7, 3)]
+strategy: ud,concurrence: False []
+strategy: lr,concurrence: False []
+strategy: all,concurrence: True [(23, 7), (24, 8), (23, 9), (20, 2), (21, 2), (24, 7), (23, 5), (22, 4), (24, 6), (18, 0)]
+{'strategy: all,concurrence: True': 0.1, 'strategy: lr,concurrence: False': 0.1, 'strategy: ud,concurrence: False': 0.1, 'strategy: all,concurrence: False': 0.7}
+
+time28:
+strategy: all,concurrence: False [(9, 5), (8, 7), (9, 7), (9, 8), (9, 4)]
+strategy: ud,concurrence: False []
+strategy: lr,concurrence: False []
+strategy: all,concurrence: True [(22, 3), (23, 3), (24, 4), (25, 7), (26, 7), (24, 9), (25, 6), (25, 8), (25, 9), (22, 2), (23, 2), (22, 1), (23, 4), (26, 8), (21, 1), (26, 6), (20, 0)]
+{'strategy: all,concurrence: True': 0.1, 'strategy: lr,concurrence: False': 0.1, 'strategy: ud,concurrence: False': 0.1, 'strategy: all,concurrence: False': 0.7}
+
+time29:
+strategy: all,concurrence: False [(7, 0), (8, 0), (10, 5), (10, 6), (11, 6), (11, 7), (10, 9), (8, 1), (10, 3), (9, 2), (11, 9), (10, 4), (11, 4), (11, 5)]
+strategy: ud,concurrence: False []
+strategy: lr,concurrence: False []
+strategy: all,concurrence: True [(26, 5), (26, 9), (28, 7), (26, 4), (27, 8), (28, 8), (27, 9), (24, 2), (24, 3), (25, 3), (27, 6), (25, 4), (27, 5), (22, 0)]
+{'strategy: all,concurrence: True': 0.1, 'strategy: lr,concurrence: False': 0.1, 'strategy: ud,concurrence: False': 0.1, 'strategy: all,concurrence: False': 0.7}
+
+time30:
+strategy: all,concurrence: False [(12, 8), (12, 9), (13, 8), (10, 0), (12, 4), (12, 3), (12, 5), (10, 2), (11, 2), (13, 5), (12, 6), (13, 7), (13, 6)]
+strategy: ud,concurrence: False []
+strategy: lr,concurrence: False []
+strategy: all,concurrence: True [(28, 5), (29, 5), (28, 6), (23, 1), (29, 7), (29, 8), (30, 8), (29, 9), (23, 0), (25, 2), (25, 1), (28, 4)]
+{'strategy: all,concurrence: True': 0.0, 'strategy: lr,concurrence: False': 0.0, 'strategy: ud,concurrence: False': 0.0, 'strategy: all,concurrence: False': 1.0}
+
+time31:
+strategy: all,concurrence: False [(11, 0), (14, 7), (14, 8), (15, 8), (12, 2), (13, 2), (12, 1), (14, 6), (15, 7), (12, 0), (14, 5), (15, 5), (14, 3), (15, 6)]
+strategy: ud,concurrence: False []
+strategy: lr,concurrence: False []
+strategy: all,concurrence: True [(27, 3), (31, 9), (29, 4), (30, 6), (28, 3), (28, 2)]
+{'strategy: all,concurrence: True': 0.0, 'strategy: lr,concurrence: False': 0.0, 'strategy: ud,concurrence: False': 0.0, 'strategy: all,concurrence: False': 1.0}
+
+time32:
+strategy: all,concurrence: False [(13, 0), (13, 1), (16, 7), (17, 8), (16, 9), (15, 9), (15, 3), (15, 4), (16, 4), (14, 0), (16, 5), (17, 5), (17, 7), (16, 3), (17, 6)]
+strategy: all,concurrence: True [(31, 7), (30, 5)]
+{'strategy: all,concurrence: True': 0.0, 'strategy: lr,concurrence: False': 0.0, 'strategy: ud,concurrence: False': 0.0, 'strategy: all,concurrence: False': 1.0}
+
+time33:
+strategy: all,concurrence: False [(17, 4), (18, 4), (18, 5), (18, 7), (17, 9), (16, 1), (18, 3), (15, 0), (16, 0), (19, 5), (19, 6), (18, 8), (19, 8), (19, 7)]
+strategy: all,concurrence: True []
+{'strategy: all,concurrence: True': 0.0, 'strategy: lr,concurrence: False': 0.0, 'strategy: ud,concurrence: False': 0.0, 'strategy: all,concurrence: False': 1.0}
+
+
+

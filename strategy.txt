@@ -1,0 +1,4 @@
+1. Each run update the reward, and find the best strategy
+2. After completing each strategy,
+	- allocate the reward again
+	- incremental allocate

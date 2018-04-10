@@ -1,0 +1,170 @@
+time0
+strategy: all,concurrence: True:9950.0
+strategy: lr,concurrence: False:9950.0
+strategy: ud,concurrence: False:9950.0
+strategy: all,concurrence: False:9950.0
+time1
+strategy: all,concurrence: True:9900.25
+strategy: lr,concurrence: False:9900.25
+strategy: ud,concurrence: False:9900.25
+strategy: all,concurrence: False:9900.25
+time2
+strategy: all,concurrence: True:9850.74875
+strategy: lr,concurrence: False:9850.74875
+strategy: ud,concurrence: False:9850.74875
+strategy: all,concurrence: False:9850.74875
+time3
+strategy: all,concurrence: True:9801.49500625
+strategy: lr,concurrence: False:9801.49500625
+strategy: ud,concurrence: False:9801.49500625
+strategy: all,concurrence: False:9801.49500625
+time4
+strategy: all,concurrence: True:9752.48753122
+strategy: lr,concurrence: False:9752.48753122
+strategy: ud,concurrence: False:9752.48753122
+strategy: all,concurrence: False:9752.48753122
+time5
+strategy: all,concurrence: True:9703.72509356
+strategy: lr,concurrence: False:9703.72509356
+strategy: ud,concurrence: False:9703.72509356
+strategy: all,concurrence: False:9703.72509356
+time6
+strategy: all,concurrence: True:9655.20646809
+strategy: lr,concurrence: False:9655.20646809
+strategy: ud,concurrence: False:9655.20646809
+strategy: all,concurrence: False:9655.20646809
+time7
+strategy: all,concurrence: True:9606.93043575
+strategy: lr,concurrence: False:9606.93043575
+strategy: ud,concurrence: False:9606.93043575
+strategy: all,concurrence: False:9606.93043575
+time8
+strategy: all,concurrence: True:9558.89578358
+strategy: lr,concurrence: False:9558.89578358
+strategy: ud,concurrence: False:9558.89578358
+strategy: all,concurrence: False:9558.89578358
+time9
+strategy: all,concurrence: True:9511.10130466
+strategy: lr,concurrence: False:9511.10130466
+strategy: ud,concurrence: False:9511.10130466
+strategy: all,concurrence: False:9511.10130466
+time10
+strategy: all,concurrence: True:9463.54579813
+strategy: lr,concurrence: False:9463.54579813
+strategy: ud,concurrence: False:9463.54579813
+strategy: all,concurrence: False:9463.54579813
+time11
+strategy: all,concurrence: True:9416.22806914
+strategy: lr,concurrence: False:9416.22806914
+strategy: ud,concurrence: False:9416.22806914
+strategy: all,concurrence: False:9416.22806914
+time12
+strategy: all,concurrence: True:9369.1469288
+strategy: lr,concurrence: False:9369.1469288
+strategy: ud,concurrence: False:9369.1469288
+strategy: all,concurrence: False:9369.1469288
+time13
+strategy: all,concurrence: True:12836.6614121
+strategy: lr,concurrence: False:9322.30119415
+strategy: ud,concurrence: False:9322.30119415
+strategy: all,concurrence: False:9322.30119415
+time14
+strategy: all,concurrence: True:33553.4035692
+strategy: lr,concurrence: False:4033.74499349
+strategy: ud,concurrence: False:4033.74499349
+strategy: all,concurrence: False:20629.5154477
+time15
+strategy: all,concurrence: True:56228.3142601
+strategy: lr,concurrence: False:6204.87217542
+strategy: ud,concurrence: False:6204.87217542
+strategy: all,concurrence: False:30691.7323388
+time16
+strategy: all,concurrence: True:77422.6172211
+strategy: lr,concurrence: False:9901.95473409
+strategy: ud,concurrence: False:9901.95473409
+strategy: all,concurrence: False:26046.4449505
+time17
+strategy: all,concurrence: True:122117.952776
+strategy: lr,concurrence: False:12277.7873903
+strategy: ud,concurrence: False:25170.9701421
+strategy: all,concurrence: False:12197.0649392
+time18
+strategy: all,concurrence: True:144980.295906
+strategy: lr,concurrence: False:17114.9885878
+strategy: ud,concurrence: False:37514.2395875
+strategy: all,concurrence: False:17115.3922001
+time19
+strategy: all,concurrence: True:177112.385633
+strategy: lr,concurrence: False:21586.9166852
+strategy: ud,concurrence: False:24173.1295202
+strategy: all,concurrence: False:21586.9146672
+time20
+strategy: all,concurrence: True:206964.919197
+strategy: lr,concurrence: False:24338.0000671
+strategy: ud,concurrence: False:32789.3439294
+strategy: all,concurrence: False:31581.4358941
+time21
+strategy: all,concurrence: True:277066.006638
+strategy: lr,concurrence: False:29445.6799084
+strategy: ud,concurrence: False:30843.4529759
+strategy: all,concurrence: False:32626.8008638
+time22
+strategy: all,concurrence: True:297232.26608
+strategy: lr,concurrence: False:36850.965639
+strategy: ud,concurrence: False:36843.9767737
+strategy: all,concurrence: False:37556.1547212
+time23
+strategy: all,concurrence: True:371214.596471
+strategy: lr,concurrence: False:40664.0814932
+strategy: ud,concurrence: False:40664.1164375
+strategy: all,concurrence: False:51360.9505828
+time24
+strategy: all,concurrence: True:403813.963129
+strategy: lr,concurrence: False:50187.054091
+strategy: ud,concurrence: False:50187.0539162
+strategy: all,concurrence: False:60697.1923449
+time25
+strategy: all,concurrence: True:434686.413064
+strategy: lr,concurrence: False:56237.5910777
+strategy: ud,concurrence: False:56237.5910785
+strategy: all,concurrence: False:80045.7880972
+time26
+strategy: all,concurrence: True:502281.505787
+strategy: lr,concurrence: False:62439.5503763
+strategy: ud,concurrence: False:62439.5503763
+strategy: all,concurrence: False:77533.8405845
+time27
+strategy: all,concurrence: True:539088.697643
+strategy: lr,concurrence: False:70157.2469605
+strategy: ud,concurrence: False:70157.2469605
+strategy: all,concurrence: False:123790.821845
+time28
+strategy: all,concurrence: True:132270.2023
+strategy: lr,concurrence: False:79968.6151061
+strategy: ud,concurrence: False:79968.6151061
+strategy: all,concurrence: False:584042.271862
+time29
+strategy: all,concurrence: True:153183.752852
+strategy: lr,concurrence: False:87225.1273619
+strategy: ud,concurrence: False:87225.1273619
+strategy: all,concurrence: False:675569.019971
+time30
+strategy: all,concurrence: True:142511.453743
+strategy: lr,concurrence: False:99884.1771178
+strategy: ud,concurrence: False:99884.1771178
+strategy: all,concurrence: False:745863.609754
+time31
+strategy: all,concurrence: True:16646.8984024
+strategy: lr,concurrence: False:0
+strategy: ud,concurrence: False:0
+strategy: all,concurrence: False:1128651.47615
+time32
+strategy: all,concurrence: True:3468.2626354
+strategy: lr,concurrence: False:0
+strategy: ud,concurrence: False:0
+strategy: all,concurrence: False:1254238.77273
+time33
+strategy: all,concurrence: True:0
+strategy: lr,concurrence: False:0
+strategy: ud,concurrence: False:0
+strategy: all,concurrence: False:1296293.18609
